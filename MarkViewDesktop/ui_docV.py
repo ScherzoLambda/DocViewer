@@ -15,6 +15,7 @@ def loadSvgIcon(file_path, width=80, height=80):
     return pixmap
 
 class Ui_MainWindow(object):
+    iconspath = "_internal\\"+ "\\icons" + "\\"
     style_button = """
     QToolTip,
     QPushButton {
@@ -73,19 +74,20 @@ class Ui_MainWindow(object):
         self.horizontalLayout.addWidget(self.fontStyle_cb)
         self.horizontalLayout.addWidget(self.fontSize_sp)
         # ====================================================
+        
         self.heading_btn = QtWidgets.QPushButton(self.frame_input)
         self.heading_btn.setObjectName("heading_btn")
         self.heading_btn.setStyleSheet(self.style_button)
         self.heading_btn.setMinimumHeight(25)
         self.horizontalLayout.addWidget(self.heading_btn)
-        self.heading_btn.setIcon(QIcon(loadSvgIcon("icons_svg/bx-heading.svg")))
+        self.heading_btn.setIcon(QIcon(loadSvgIcon(self.iconspath+"bx-heading.svg")))
         self.heading_btn.setToolTip("Header text")
         
         self.bold_btn = QtWidgets.QPushButton(self.frame_input)
         self.bold_btn.setObjectName("bold_btn")
         self.bold_btn.setMinimumHeight(25)
         self.bold_btn.setStyleSheet(self.style_button)
-        self.bold_btn.setIcon(QIcon(loadSvgIcon("icons_svg/bold.svg")))
+        self.bold_btn.setIcon(QIcon(loadSvgIcon(self.iconspath+"bold.svg")))
         self.bold_btn.setToolTip("Bold text")
         self.horizontalLayout.addWidget(self.bold_btn)
         
@@ -94,7 +96,7 @@ class Ui_MainWindow(object):
         self.italic_btn.setStyleSheet(self.style_button)
         self.italic_btn.setMinimumHeight(25)
         self.italic_btn.setMinimumWidth(15)
-        self.italic_btn.setIcon(QIcon(loadSvgIcon("icons_svg/bx-italic.svg")))
+        self.italic_btn.setIcon(QIcon(loadSvgIcon(self.iconspath+"bx-italic.svg")))
         self.italic_btn.setToolTip("Italic Text")
         self.horizontalLayout.addWidget(self.italic_btn)
         
@@ -102,7 +104,7 @@ class Ui_MainWindow(object):
         self.quote_btn.setObjectName("quote_btn")
         self.quote_btn.setStyleSheet(self.style_button)
         self.quote_btn.setMinimumHeight(25)
-        self.quote_btn.setIcon(QIcon(loadSvgIcon("icons_svg/bxs-quote-right.svg")))
+        self.quote_btn.setIcon(QIcon(loadSvgIcon(self.iconspath+"bxs-quote-right.svg")))
         self.quote_btn.setToolTip("Block Quote")
         self.horizontalLayout.addWidget(self.quote_btn)
         
@@ -110,7 +112,7 @@ class Ui_MainWindow(object):
         self.link_btn.setObjectName("link_btn")
         self.link_btn.setStyleSheet(self.style_button)
         self.link_btn.setMinimumHeight(25)
-        self.link_btn.setIcon(QIcon(loadSvgIcon("icons_svg/bx-link.svg")))
+        self.link_btn.setIcon(QIcon(loadSvgIcon(self.iconspath+"bx-link.svg")))
         self.link_btn.setToolTip("refer a link")
         self.horizontalLayout.addWidget(self.link_btn)
         
@@ -118,7 +120,7 @@ class Ui_MainWindow(object):
         self.unList_btn.setObjectName("unList_btn")
         self.unList_btn.setStyleSheet(self.style_button)
         self.unList_btn.setMinimumHeight(25)
-        icon = QtGui.QIcon("icons_svg/menu.png")
+        icon = QtGui.QIcon(self.iconspath+"menu.png")
         pixmap = icon.pixmap(QtCore.QSize(100, 100))
         pixmap = pixmap.scaled(128, 128, QtCore.Qt.KeepAspectRatio, QtCore.Qt.SmoothTransformation) # Redimensiona a imagem
         self.unList_btn.setIcon(QtGui.QIcon(pixmap))
@@ -129,7 +131,7 @@ class Ui_MainWindow(object):
         self.nList_btn.setObjectName("nList_btn")
         self.nList_btn.setStyleSheet(self.style_button)
         self.nList_btn.setMinimumHeight(25)
-        icon = QtGui.QIcon("icons_svg/number.png")
+        icon = QtGui.QIcon(self.iconspath+"number.png")
         pixmap = icon.pixmap(QtCore.QSize(100, 100))
         pixmap = pixmap.scaled(128, 128, QtCore.Qt.KeepAspectRatio, QtCore.Qt.SmoothTransformation) # Redimensiona a imagem
         self.nList_btn.setIcon(QtGui.QIcon(pixmap))
@@ -141,7 +143,7 @@ class Ui_MainWindow(object):
         self.taskList_btn.setObjectName("taskList_btn")
         self.taskList_btn.setStyleSheet(self.style_button)
         self.taskList_btn.setMinimumHeight(25)
-        icon = QtGui.QIcon("icons_svg/check_2.png")
+        icon = QtGui.QIcon(self.iconspath+"check_2.png")
         pixmap = icon.pixmap(QtCore.QSize(100, 100))
         pixmap = pixmap.scaled(128, 128, QtCore.Qt.KeepAspectRatio, QtCore.Qt.SmoothTransformation)
         self.taskList_btn.setIcon(QtGui.QIcon(pixmap))
