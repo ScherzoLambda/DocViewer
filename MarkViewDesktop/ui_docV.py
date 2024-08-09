@@ -67,14 +67,14 @@ class Ui_MainWindow(object):
         self.fontSize_sp.valueChanged.connect(self.update_font_size)  # Conecta a mudança de valor ao método
 
         self.fontStyle_cb = QComboBox(self.frame_input)
-        self.fontStyle_cb.setToolTip("Tamanho do texto")
+        self.fontStyle_cb.setToolTip("Estilo da fonte")
         self.fontStyle_cb.setStyleSheet(self.style_utils)
         self.fontStyle_cb.addItems(["Arial", "Courier New", "Times New Roman"])
         self.fontStyle_cb.currentIndexChanged.connect(self.update_font_style)
         self.horizontalLayout.addWidget(self.fontStyle_cb)
         self.horizontalLayout.addWidget(self.fontSize_sp)
         # ====================================================
-        
+        # ======================================= Definindo botoes de auxilio a sintaxe Markdown
         self.heading_btn = QtWidgets.QPushButton(self.frame_input)
         self.heading_btn.setObjectName("heading_btn")
         self.heading_btn.setStyleSheet(self.style_button)
@@ -164,7 +164,7 @@ class Ui_MainWindow(object):
         self.editArea.setFont(font)
         self.splitter.addWidget(self.editArea)
 
-        # Add the splitter to the main layout
+        # ================================ Layout que segura o splitter
         self.verticalLayout_2.addWidget(self.splitter)
 
         MainWindow.setCentralWidget(self.centralwidget)
@@ -182,7 +182,7 @@ class Ui_MainWindow(object):
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
         
-
+        # =============================================== conectando funcionalides dos botoes de ediçao de sintaxe Markdown
         self.heading_btn.clicked.connect(self.addHeader)
         self.bold_btn.clicked.connect(self.addBold)
         self.italic_btn.clicked.connect(self.addItalic)
@@ -208,7 +208,10 @@ class Ui_MainWindow(object):
         font = self.editArea.font()
         font.setFamily(self.fontStyle_cb.currentText())
         self.editArea.setFont(font)
-        
+    
+    #>
+    # Funcionalidades Botões de edição de texto
+    # <#    
     def addHeader(self):
         cursor = self.editArea.textCursor()
         selected_text = cursor.selectedText()

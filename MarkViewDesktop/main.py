@@ -4,14 +4,18 @@ from PyQt5.QtWidgets import QApplication, QMainWindow, QAction, QFileDialog, QWi
 from PyQt5.QtWebEngineWidgets import QWebEngineView
 import markdown
 from ui_docV import Ui_MainWindow
+from pathlib import Path
 
 class MarkdownEditor(QMainWindow):
+    file_path = ""
     def __init__(self):
+        global file_path
         super().__init__()
+        file_path = Path('mark_css.html')
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
         self.initUI()
-       
+    # ================================== Inicializa UI Main
     def initUI(self):
         self.ui.statusBarMessage("[ ============================================= Powered by SherzoLambda =============================================]")
         self.previewArea = QWebEngineView()
@@ -20,10 +24,10 @@ class MarkdownEditor(QMainWindow):
         self.ui.splitter.setStyleSheet("QSplitter::handle {background-color:#dfe2e5 ; border: 8px ridge  qlineargradient(spread:pad, x1:0.982591, y1:0.035, x2:0.273, y2:0.238636, stop:0.119318 rgba(199, 207, 255, 255), stop:1 rgba(139, 98, 155, 255)); }")
         self.ui.editArea.setFocus()
         style_preview = """
-        QWebEngineView {
-            border-radius: 10px; /* Raio de borda para arredondar */
-        }
-        """
+                QWebEngineView {
+                    border-radius: 10px; /* Raio de borda para arredondar */
+                }
+                """
 
         self.previewArea.setStyleSheet(style_preview)
         # ======================================= Barra de Menu
@@ -125,82 +129,9 @@ class MarkdownEditor(QMainWindow):
         #print(html_text)
         html_text = html_text.replace('[ ]', '<input type="checkbox" disabled>')
         html_text = html_text.replace('[x]', '<input type="checkbox" disabled checked>')
-
-        complete_html = f"""
-        <!DOCTYPE html>
-        <html>
-        <head>
-            <meta charset="utf-8">
-            <style>
-                body {{
-                    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
-                    line-height: 1.6;
-                    padding: 20px;
-                    color: #E6edf3;
-                    background-color: #161b22;
-                }}
-                h1, h2, h3, h4, h5, h6 {{
-                    border-bottom: 1px solid #eaecef;
-                    padding-bottom: 0.3em;
-                }}
-                h1 {{ font-size: 2em; }}
-                h2 {{ font-size: 1.5em; }}
-                h3 {{ font-size: 1.25em; }}
-                blockquote {{
-                    color: #848d97;
-                    border-left: 0.25em solid #30363d;
-                    padding: 0.5em 1em;
-                }}
-                code {{
-                    background-color: rgba(27,31,35,0.05);
-                    padding: 0.2em 0.4em;
-                    margin: 0;
-                    font-size: 85%;
-                    border-radius: 3px;
-                }}
-                pre code {{
-                    background-color: #30363d;
-                    padding: 0;
-                    font-size: 100%;
-                }}
-                pre {{
-                    background-color: #30363d;
-                    padding: 1em;
-                    overflow: auto;
-                }}
-                table {{
-                    border-collapse: collapse;
-                    border-spacing: 0;
-                    max-width: 100%;
-                    display: block;
-                    overflow: auto;
-                }}
-                table th, table td {{
-                    border: 1px solid #dfe2e5;
-                    padding: 6px 13px;
-                }}
-                table tr {{
-                    background-color: #161b22;
-                    border-top: 1px solid #c6cbd1;
-                }}
-                table tr:nth-child(2n) {{
-                    background-color: #30363d;
-                }}
-                input[type="checkbox"] {{
-                    width: 1em;
-                    height: 1em;
-                    margin-right: 0.5em;
-                    vertical-align: middle;
-                    position: relative;
-                    top: -0.1em;
-                }}
-            </style>
-        </head>
-        <body>
-            {html_text}
-        </body>
-        </html>
-        """
+        html_content = file_path.read_text(encoding='utf-8')
+        complete_html = html_content.format(html_text=html_text)
+        print(complete_html)
         self.previewArea.setHtml(complete_html)
 
 if __name__ == '__main__':
