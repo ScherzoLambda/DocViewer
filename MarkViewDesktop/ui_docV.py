@@ -1,14 +1,24 @@
+import sys
+from os import path
 from PyQt5 import QtCore, QtGui, QtWidgets 
 from PyQt5.QtWidgets import QSplitter, QLabel, QSpinBox, QComboBox
-from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QIcon, QPixmap, QPainter, QFont, QTextCursor
 from PyQt5.QtSvg import QSvgRenderer
+from PyQt5.QtWebEngineWidgets import QWebEngineView
 
+def resource_path(relative_path):
+    """ Get the absolute path to the resource, works for dev and for PyInstaller """
+    try:
+        base_path = sys._MEIPASS
+    except AttributeError:
+        base_path = path.abspath(".")
+
+    return path.join(base_path, relative_path)
 
 def loadSvgIcon(file_path, width=80, height=80):
     svg_renderer = QSvgRenderer(file_path)
     pixmap = QPixmap(width, height)
-    pixmap.fill(Qt.transparent)
+    pixmap.fill(QtCore.Qt.transparent)
     painter = QPainter(pixmap)
     svg_renderer.render(painter)
     painter.end()
@@ -33,156 +43,265 @@ class Ui_MainWindow(object):
          /* Cor de fundo padrão */
         border: 2px solid #161b22; /* Borda */
         color: white; /* Cor do texto */
-        
+        font-size: 16px;
         border-radius: 4px; /* Borda arredondada */
     """
-
+    style_closeBTN = """
+    QPushButton {
+        border: none;
+        background-color: transparent;
+    }
+    QPushButton:hover {
+        background-color: #f4696b;  /* cor de fundo*/
+    }
+    """
+    style_m_M = """
+    QPushButton {
+        font-size: 18px;
+        border: none;
+        background-color: transparent;
+    }
+    QPushButton:hover {
+        background-color: #DCDCDC;  
+    }
+"""
+    style = f"""
+        QTabWidget::pane {{
+            background-image: url({iconspath+"docV_icon.png"});
+            background-repeat: no-repeat;
+            background-position: center;
+            background-size: cover;
+        }}
+    """
     def setupUi(self, MainWindow):
+        self.new_file_count = 0
+        self.open_files = {}
+        self.menu = None
+        self.has_op_menu = False
+        self.act_op_file = None
         MainWindow.setObjectName("MainWindow")
-        
         MainWindow.resize(539, 307)
-        MainWindow.setStyleSheet("background-color: rgb(117, 117, 117); border-radius:12px;")
+        MainWindow.setStyleSheet("background-color: rgb(117, 117, 117);")
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
-        self.verticalLayout_2 = QtWidgets.QVBoxLayout(self.centralwidget)
-        self.verticalLayout_2.setObjectName("verticalLayout_2")
+        self.centralVL = QtWidgets.QVBoxLayout(self.centralwidget)
+        self.centralVL.setObjectName("centralVL")
+        #self.centralVL.setSpacing(0)
+        self.centralVL.setContentsMargins(0, 0, 0, 0)
 
-        # Create the input frame with buttons
-        self.frame_input = QtWidgets.QFrame(self.centralwidget)
-        self.frame_input.setStyleSheet("background-color: rgb(117, 117, 117);")
-        self.frame_input.setObjectName("frame_input")
-        self.verticalLayout = QtWidgets.QVBoxLayout(self.frame_input)
-        self.verticalLayout.setObjectName("verticalLayout")
-        self.horizontalLayout = QtWidgets.QHBoxLayout()
-        self.horizontalLayout.setObjectName("horizontalLayout")
-        self.horizontalLayout.setSpacing(10)
-        self.verticalLayout.setContentsMargins(0, 0, 0, 0)
-        self.horizontalLayout.setContentsMargins(0, 0, 0, 0)
-        # ============================================
-        self.fontSize_sp = QSpinBox(self.frame_input)
+        # Frames for layouts
+        # header_frame, buttons_frame
+        self.header_frame = QtWidgets.QFrame(self.centralwidget)
+        self.header_frame.setStyleSheet("background-color: rgb(117, 117, 117);")
+        self.header_frame.setObjectName("header_frame")
+        self.buttons_frame = QtWidgets.QFrame(self.centralwidget)
+        self.buttons_frame.setStyleSheet("background-color: rgb(117, 117, 117);")
+        self.buttons_frame.setObjectName("buttons_frame")
+        # Layouts for components
+        # editButtonsHL, headerVL, headerLayout
+        self.headerVL = QtWidgets.QVBoxLayout(self.header_frame)
+        self.headerVL.setObjectName("headerVL")
+        self.editButtonsHL = QtWidgets.QHBoxLayout(self.buttons_frame)
+        self.editButtonsHL.setObjectName("editButtonsHL")
+        self.editButtonsHL.setSpacing(10)
+
+        self.headerVL.setContentsMargins(0, 0, 0, 0)
+        #self.editButtonsHL.setContentsMargins(0, 0, 0, 0)
+
+        # ===================== Header for headerVL
+        self.headerLayout = QtWidgets.QHBoxLayout()
+        self.headerLayout.setObjectName("headerLayout")
+        self.headerLayout.setSpacing(0)
+        self.headerLayout.setContentsMargins(0, 0, 0, 0)
+        # ICON label
+        self.icon_label = QtWidgets.QLabel(self.header_frame)
+        self.icon_label.setPixmap(QPixmap(resource_path('icons/docV_icon.png')).scaled(35, 35, aspectRatioMode=QtCore.Qt.KeepAspectRatio))
+        self.icon_label.setMaximumHeight(30)
+        self.icon_label.setMaximumWidth(45)
+        self.icon_label.setContentsMargins(8,0,0,0)
+        # FILE button
+        self.file_btn = QtWidgets.QPushButton(self.header_frame)
+        self.file_btn.setStyleSheet(self.style_m_M)
+        self.file_btn.setObjectName("file_btn")
+        self.file_btn.setText("File")
+        self.file_btn.setMaximumHeight(30)
+        self.file_btn.setMaximumWidth(45)
+
+        spacer = QtWidgets.QSpacerItem(20, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        # CLOSE WINDOW button
+        self.close_btn = QtWidgets.QPushButton(self.header_frame)
+        self.close_btn.setIcon(QIcon(resource_path('icons/close.png')))
+        self.close_btn.setObjectName("close_btn")
+        self.close_btn.setStyleSheet(self.style_closeBTN)
+        self.close_btn.setMaximumHeight(30)
+        self.close_btn.setMaximumWidth(45)
+        #self.close_btn.setToolTip("Close Window")
+        # MINIMIZE WINDOW button
+        self.minimize_btn = QtWidgets.QPushButton(self.header_frame)
+        self.minimize_btn.setIcon(QIcon(resource_path('icons/mini2.png')))
+        self.minimize_btn.setObjectName("close_btn")
+        self.minimize_btn.setStyleSheet(self.style_m_M)
+        self.minimize_btn.setMaximumHeight(30)
+        self.minimize_btn.setMaximumWidth(45)
+        #self.minimize_btn.setToolTip("Minimize Window")
+        # MAXIMIZE WINDOW button
+        self.maxmize_btn = QtWidgets.QPushButton(self.header_frame)
+        self.maxmize_btn.setIcon(QIcon(resource_path('icons/maximizar.png')))
+        self.maxmize_btn.setObjectName("maxmize_btn")
+        self.maxmize_btn.setStyleSheet(self.style_m_M)
+        self.maxmize_btn.setMaximumHeight(30)
+        self.maxmize_btn.setMaximumWidth(45)
+        #self.maxmize_btn.setToolTip("Maxmize Window")
+        # Adjusting size and alignment
+        self.file_btn.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed)
+        self.minimize_btn.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed)
+        self.maxmize_btn.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed)
+        self.close_btn.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed)
+        
+        self.headerLayout.setAlignment(self.file_btn, QtCore.Qt.AlignLeft)
+        self.headerLayout.setAlignment(self.minimize_btn, QtCore.Qt.AlignRight)
+        self.headerLayout.setAlignment(self.maxmize_btn, QtCore.Qt.AlignRight)
+        self.headerLayout.setAlignment(self.close_btn, QtCore.Qt.AlignRight) 
+        # adding widgets to layout
+        self.headerLayout.addWidget(self.icon_label)
+        self.headerLayout.addWidget(self.file_btn)
+        self.headerLayout.addItem(spacer)
+        self.headerLayout.addWidget(self.minimize_btn)
+        self.headerLayout.addWidget(self.maxmize_btn)
+        self.headerLayout.addWidget(self.close_btn)
+        
+        self.headerVL.addLayout(self.headerLayout)
+        self.centralVL.addWidget(self.header_frame)
+
+        # ================= Fonte style and Size ===================
+        self.fontSize_sp = QSpinBox(self.buttons_frame)
         self.fontSize_sp.setStyleSheet(self.style_utils)
         self.fontSize_sp.setToolTip("Tamanho do texto")
         self.fontSize_sp.setRange(8, 72)  # Define o intervalo do tamanho da fonte
         self.fontSize_sp.setValue(16)  # Define o valor padrão
         self.fontSize_sp.valueChanged.connect(self.update_font_size)  # Conecta a mudança de valor ao método
 
-        self.fontStyle_cb = QComboBox(self.frame_input)
-        self.fontStyle_cb.setToolTip("Estilo da fonte")
+        self.fontStyle_cb = QComboBox(self.buttons_frame)
+        self.fontStyle_cb.setToolTip("Fonte do texto")
+        self.fontStyle_cb.setMaximumWidth(110)
         self.fontStyle_cb.setStyleSheet(self.style_utils)
         self.fontStyle_cb.addItems(["Arial", "Courier New", "Times New Roman"])
         self.fontStyle_cb.currentIndexChanged.connect(self.update_font_style)
-        self.horizontalLayout.addWidget(self.fontStyle_cb)
-        self.horizontalLayout.addWidget(self.fontSize_sp)
-        # ====================================================
-        # ======================================= Definindo botoes de auxilio a sintaxe Markdown
-        self.heading_btn = QtWidgets.QPushButton(self.frame_input)
+        
+        self.editButtonsHL.addWidget(self.fontStyle_cb)
+        self.editButtonsHL.addWidget(self.fontSize_sp)
+        
+        # ================= Markdown Utilities ========================
+        self.heading_btn = QtWidgets.QPushButton(self.buttons_frame)
         self.heading_btn.setObjectName("heading_btn")
         self.heading_btn.setStyleSheet(self.style_button)
         self.heading_btn.setMinimumHeight(25)
-        self.horizontalLayout.addWidget(self.heading_btn)
-        self.heading_btn.setIcon(QIcon(loadSvgIcon(self.iconspath+"bx-heading.svg")))
+        self.editButtonsHL.addWidget(self.heading_btn)
+        self.heading_btn.setIcon(QIcon(loadSvgIcon(resource_path('icons/bx-heading.svg'))))
         self.heading_btn.setToolTip("Header text")
         
-        self.bold_btn = QtWidgets.QPushButton(self.frame_input)
+        self.bold_btn = QtWidgets.QPushButton(self.buttons_frame)
         self.bold_btn.setObjectName("bold_btn")
         self.bold_btn.setMinimumHeight(25)
         self.bold_btn.setStyleSheet(self.style_button)
-        self.bold_btn.setIcon(QIcon(loadSvgIcon(self.iconspath+"bold.svg")))
+        self.bold_btn.setIcon(QIcon(loadSvgIcon(resource_path('icons/bold.svg'))))
         self.bold_btn.setToolTip("Bold text")
-        self.horizontalLayout.addWidget(self.bold_btn)
+        self.editButtonsHL.addWidget(self.bold_btn)
         
-        self.italic_btn = QtWidgets.QPushButton(self.frame_input)
+        self.italic_btn = QtWidgets.QPushButton(self.buttons_frame)
         self.italic_btn.setObjectName("italic_btn")
         self.italic_btn.setStyleSheet(self.style_button)
         self.italic_btn.setMinimumHeight(25)
         self.italic_btn.setMinimumWidth(15)
-        self.italic_btn.setIcon(QIcon(loadSvgIcon(self.iconspath+"bx-italic.svg")))
+        self.italic_btn.setIcon(QIcon(loadSvgIcon(resource_path('icons/bx-italic.svg'))))
         self.italic_btn.setToolTip("Italic Text")
-        self.horizontalLayout.addWidget(self.italic_btn)
+        self.editButtonsHL.addWidget(self.italic_btn)
         
-        self.quote_btn = QtWidgets.QPushButton(self.frame_input)
+        self.quote_btn = QtWidgets.QPushButton(self.buttons_frame)
         self.quote_btn.setObjectName("quote_btn")
         self.quote_btn.setStyleSheet(self.style_button)
         self.quote_btn.setMinimumHeight(25)
-        self.quote_btn.setIcon(QIcon(loadSvgIcon(self.iconspath+"bxs-quote-right.svg")))
+        self.quote_btn.setIcon(QIcon(loadSvgIcon(resource_path('icons/bxs-quote-right.svg'))))
         self.quote_btn.setToolTip("Block Quote")
-        self.horizontalLayout.addWidget(self.quote_btn)
+        self.editButtonsHL.addWidget(self.quote_btn)
         
-        self.link_btn = QtWidgets.QPushButton(self.frame_input)
+        self.link_btn = QtWidgets.QPushButton(self.buttons_frame)
         self.link_btn.setObjectName("link_btn")
         self.link_btn.setStyleSheet(self.style_button)
         self.link_btn.setMinimumHeight(25)
-        self.link_btn.setIcon(QIcon(loadSvgIcon(self.iconspath+"bx-link.svg")))
+        self.link_btn.setIcon(QIcon(loadSvgIcon(resource_path('icons/bx-link.svg'))))
         self.link_btn.setToolTip("refer a link")
-        self.horizontalLayout.addWidget(self.link_btn)
+        self.editButtonsHL.addWidget(self.link_btn)
         
-        self.unList_btn = QtWidgets.QPushButton(self.frame_input)
+        self.unList_btn = QtWidgets.QPushButton(self.buttons_frame)
         self.unList_btn.setObjectName("unList_btn")
         self.unList_btn.setStyleSheet(self.style_button)
         self.unList_btn.setMinimumHeight(25)
-        icon = QtGui.QIcon(self.iconspath+"menu.png")
+        icon = QtGui.QIcon(resource_path('icons/menu.png'))
         pixmap = icon.pixmap(QtCore.QSize(100, 100))
         pixmap = pixmap.scaled(128, 128, QtCore.Qt.KeepAspectRatio, QtCore.Qt.SmoothTransformation) # Redimensiona a imagem
         self.unList_btn.setIcon(QtGui.QIcon(pixmap))
         self.unList_btn.setToolTip("Unordered List")
-        self.horizontalLayout.addWidget(self.unList_btn)
+        self.editButtonsHL.addWidget(self.unList_btn)
         
-        self.nList_btn = QtWidgets.QPushButton(self.frame_input)
+        self.nList_btn = QtWidgets.QPushButton(self.buttons_frame)
         self.nList_btn.setObjectName("nList_btn")
         self.nList_btn.setStyleSheet(self.style_button)
         self.nList_btn.setMinimumHeight(25)
-        icon = QtGui.QIcon(self.iconspath+"number.png")
+        icon = QtGui.QIcon(resource_path('icons/number.png'))
         pixmap = icon.pixmap(QtCore.QSize(100, 100))
         pixmap = pixmap.scaled(128, 128, QtCore.Qt.KeepAspectRatio, QtCore.Qt.SmoothTransformation) # Redimensiona a imagem
         self.nList_btn.setIcon(QtGui.QIcon(pixmap))
         self.nList_btn.setText("")
         self.nList_btn.setToolTip("Numbered List")
-        self.horizontalLayout.addWidget(self.nList_btn)
+        self.editButtonsHL.addWidget(self.nList_btn)
         
-        self.taskList_btn = QtWidgets.QPushButton(self.frame_input)
+        self.taskList_btn = QtWidgets.QPushButton(self.buttons_frame)
         self.taskList_btn.setObjectName("taskList_btn")
         self.taskList_btn.setStyleSheet(self.style_button)
         self.taskList_btn.setMinimumHeight(25)
-        icon = QtGui.QIcon(self.iconspath+"check_2.png")
+        icon = QtGui.QIcon(resource_path('icons/check_2.png'))
         pixmap = icon.pixmap(QtCore.QSize(100, 100))
         pixmap = pixmap.scaled(128, 128, QtCore.Qt.KeepAspectRatio, QtCore.Qt.SmoothTransformation)
         self.taskList_btn.setIcon(QtGui.QIcon(pixmap))
         self.taskList_btn.setToolTip("Task List")
-        self.horizontalLayout.addWidget(self.taskList_btn)
-        self.verticalLayout.addLayout(self.horizontalLayout)
+        self.editButtonsHL.addWidget(self.taskList_btn)
+        
+        #========================================= adding input_frame to centralVL
+        self.centralVL.addWidget(self.buttons_frame)
 
-        # Add the input frame with buttons to the main layout
-        self.verticalLayout_2.addWidget(self.frame_input)
-
-        # Create the edit area and add it to the splitter
-        self.splitter = QSplitter(Qt.Vertical)
-        self.editArea = QtWidgets.QTextEdit(self.centralwidget)
+        # ================= Spliter, InputArea(EditArea), tab_widget
+        # editArea is for a tab on tab_widget, added on call of function new_file() defined in main.py
+        self.tab_widget = QtWidgets.QTabWidget()
+        self.tab_widget.setTabsClosable(True)
+        self.splitter = QSplitter(QtCore.Qt.Vertical)
+        self.editArea = QtWidgets.QTextEdit() #TextEditWithLineNumbers()
         self.editArea.setStyleSheet("background-color: #DCDCDC;")
         self.editArea.setObjectName("editArea")
         font = QFont()
         font.setPointSize(16)
         self.editArea.setFont(font)
-        self.splitter.addWidget(self.editArea)
+        self.splitter.addWidget(self.tab_widget)
 
-        # ================================ Layout que segura o splitter
-        self.verticalLayout_2.addWidget(self.splitter)
-
+        #========================================= adding splitter to centralVL
+        self.centralVL.addWidget(self.splitter)
+        
+        self.previewArea = QWebEngineView()
+        self.previewArea.setContextMenuPolicy(0) # Desabilita menu de contexto. 0=Qt.NoContextMenu
+        #========================================= adding previewArea to splitter
+        self.splitter.addWidget(self.previewArea)
+        
         MainWindow.setCentralWidget(self.centralwidget)
-        self.menubar = QtWidgets.QMenuBar(MainWindow)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 539, 22))
-        self.menubar.setStyleSheet("background-color: #dfe2e5;")
-        self.menubar.setObjectName("menubar")
-        MainWindow.setMenuBar(self.menubar)
+
         self.statusbar = QtWidgets.QStatusBar(MainWindow)
         self.statusbar.setObjectName("statusbar")
-        
         self.statusbar.setStyleSheet("background-color: #dfe2e5;")
         MainWindow.setStatusBar(self.statusbar)
         
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
         
-        # =============================================== conectando funcionalides dos botoes de ediçao de sintaxe Markdown
+        # Conecta ações auxilio markdown aos  respectivos botoes
         self.heading_btn.clicked.connect(self.addHeader)
         self.bold_btn.clicked.connect(self.addBold)
         self.italic_btn.clicked.connect(self.addItalic)
@@ -192,13 +311,44 @@ class Ui_MainWindow(object):
         self.nList_btn.clicked.connect(self.addNList)
         self.taskList_btn.clicked.connect(self.addTaskList)
 
-    def statusBarMessage(self, texto:str):
-        label = QLabel(texto)
-        label.setAlignment(Qt.AlignCenter)  # Centralizar o texto no rótulo
+    
+    def statusBarMessage(self):
+        self.init_status_bar()
+    def init_status_bar(self):
 
-        # Adicionar o rótulo à barra de status
-        self.statusbar.addWidget(label)
+        # Adicionando um rótulo à barra de status
+        # self.status_label = QLabel("\t\t Bem Vindo(a)!!")
+        # self.status_label.setStyleSheet("color: black;")
+        # self.statusbar.addWidget(self.status_label)  # Use addWidget para garantir visibilidade
 
+        # Personalizando a barra de status com estilo
+        self.statusbar.setStyleSheet("""
+            QStatusBar {{
+                background-color: #2b2b2b;
+                color: black;
+                font-size: 12px;
+            }}
+            QLabel {{
+                font-weight: bold;
+                color: black;
+            }}
+            QProgressBar {{
+                border: 1px solid #3a3f44;
+                background-color: #1c1c1c;
+                color: #d4d4d4;
+                text-align: center;
+            }}
+            QPushButton {{
+                border: 1px solid #5a5a5a;
+                padding: 3px;
+                border-radius: 3px;
+            }}
+            QPushButton:hover {{
+                background-color: #4a4a4a;
+            }}
+        """)
+    
+    #================Funções para os botoes de auxilio do Markdown
     def update_font_size(self):
         font = self.editArea.font()
         font.setPointSize(self.fontSize_sp.value())
@@ -208,10 +358,7 @@ class Ui_MainWindow(object):
         font = self.editArea.font()
         font.setFamily(self.fontStyle_cb.currentText())
         self.editArea.setFont(font)
-    
-    #>
-    # Funcionalidades Botões de edição de texto
-    # <#    
+        
     def addHeader(self):
         cursor = self.editArea.textCursor()
         selected_text = cursor.selectedText()
@@ -315,7 +462,8 @@ class Ui_MainWindow(object):
             cursor.insertText("- [ ] ")
             self.editArea.setTextCursor(cursor)
             self.editArea.setFocus()
-            
+
+    #================ Função que traduz a UI
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "DocViewer"))
