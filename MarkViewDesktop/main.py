@@ -74,7 +74,7 @@ class MarkdownEditor(QMainWindow):
         save_file_act.setShortcut("Ctrl+S")
         save_file_act.triggered.connect(self.saveFile)
         menu.addAction(save_file_act)
-        # Ajustando a largura do menu
+
         menu.setFixedWidth(210)  # Definindo uma largura fixa para o menu
 
         return menu

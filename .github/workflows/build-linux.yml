@@ -55,6 +55,6 @@ jobs:
         uses: actions/upload-release-asset@v1
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: dist/main  # Caminho do arquivo gerado pelo PyInstaller (sem extensão no Linux)
+          asset_path: dist/markview  # Caminho do arquivo gerado pelo PyInstaller (sem extensão no Linux)
           asset_name: "markview-linux"  # Nome que aparecerá na Release
           asset_content_type: application/octet-stream
