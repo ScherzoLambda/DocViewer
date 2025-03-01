@@ -48,7 +48,7 @@ jobs:
           draft: false       # true se quiser criar como rascunho
           prerelease: false  # true se for um pré-lançamento
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.BUILD_TOKEN }}
 
       # 6) Fazer upload do binário gerado na release
       - name: Upload to Release
