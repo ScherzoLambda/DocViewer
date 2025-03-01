@@ -38,7 +38,7 @@ class MarkdownEditor(QMainWindow):
             apos a chamada de show()       
         """
         # Agora a janela está completamente carregada e podemos verificar o splitter
-        #self.checkIfAnyItemHidden()
+        #self.checkIfAnyItemHidden() teste
     
     def initUI(self):
         self.ui.statusBarMessage()
