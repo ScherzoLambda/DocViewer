@@ -16,7 +16,7 @@ jobs:
     steps:
       # 1) Checkout do repositório
       - name: Check out repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       # 2) Configurar Python
       - name: Set up Python
