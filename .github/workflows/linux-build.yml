@@ -3,7 +3,7 @@ name: Build and Release (Linux)
 on:
   push:
     branches: 
-      - linux-release
+      - linux-release-not
     tags: [ "*" ]
     paths:
       - 'MarkViewDesktop/**'
