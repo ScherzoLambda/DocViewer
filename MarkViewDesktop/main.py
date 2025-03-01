@@ -37,7 +37,7 @@ class MarkdownEditor(QMainWindow):
         """Função chamada quando os componentes visuais ja foram carregados,
             apos a chamada de show()       
         """
-        # Agora a janela está completamente carregada e podemos verificar o splitter
+        
         #self.checkIfAnyItemHidden() 
     
     def initUI(self):
