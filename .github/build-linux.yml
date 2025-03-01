@@ -3,11 +3,10 @@ name: Build and Release (Linux)
 on:
   # Dispare em push na branch main e tags
   push:
-    branches: [ "linux-release" ]
+    branches: linux-release
     tags: [ "*" ]
-  # Opcional: dispare em pull_request se quiser testar também
-  # pull_request:
-
+    paths:
+      - 'MarkViewDesktop/**' 
 jobs:
   build-linux:
     runs-on: ubuntu-latest
@@ -20,7 +19,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: "3.9"  # Ajuste conforme necessário
+          python-version: "3.9"  
 
       # 3) Instalar dependências
       - name: Install dependencies
