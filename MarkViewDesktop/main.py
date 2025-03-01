@@ -5,7 +5,7 @@ from PyQt5.QtCore import Qt, QEvent
 from PyQt5.QtWidgets import (QApplication, QMainWindow, QTextEdit,
                              QMessageBox, QMenu, QFileDialog, QInputDialog,
                              QVBoxLayout, QWidget, QAction)
-import markdown # necessario para as tabelas
+import markdown # para as tabelas
 from ui_docV import Ui_MainWindow
 
 class MarkdownEditor(QMainWindow):
