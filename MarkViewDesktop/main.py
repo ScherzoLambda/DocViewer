@@ -113,6 +113,7 @@ class MarkdownEditor(QMainWindow):
             self.move(self.pos() + event.pos() - self._mousePressPos)
 
     def mouseReleaseEvent(self, event):
+        # Reseta a posição do mouse ao soltar
         self._mousePressPos = None
     #======================================== Gerencia{ Maximizar, miniminizar, Fechar} janela
     def restore_or_maximize(self):
