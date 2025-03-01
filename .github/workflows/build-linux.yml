@@ -3,10 +3,13 @@ name: Build and Release (Linux)
 on:
   # Dispare em push na branch main e tags
   push:
-    branches: linux-release
+    branches: 
+      - linux-release
     tags: [ "*" ]
     paths:
       - 'MarkViewDesktop/**' 
+  workflow_dispatch:
+
 jobs:
   build-linux:
     runs-on: ubuntu-latest
