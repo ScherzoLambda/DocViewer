@@ -43,7 +43,7 @@ jobs:
         id: create_release
         uses: actions/create-release@v1
         with:
-          tag_name: v0.1.0   # Defina ou gere a versão dinamicamente (ex. via semver)
+          tag_name: v0.1.1   # Defina ou gere a versão dinamicamente (ex. via semver)
           release_name: "Linux Release v0.1.0"
           draft: false       # true se quiser criar como rascunho
           prerelease: false  # true se for um pré-lançamento
