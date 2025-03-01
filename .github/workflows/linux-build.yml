@@ -35,7 +35,11 @@ jobs:
       - name: Build with PyInstaller
         run: |
           # pyinstaller --onefile MarkViewDesktop/main.py --name markview
-          pyinstaller --noconsole --name DocViewer --icon="MarkViewDesktop/icons_svg/doc_icon.ico" --add-data "MarkViewDesktop/ui_docV.py;." --add-data "MarkViewDesktop/icons_svg/*;icons"  MarkViewDesktop/main.py  
+          pyinstaller --noconsole --name DocViewer \
+            --icon="MarkViewDesktop/icons_svg/doc_icon.ico" \
+            --add-data "MarkViewDesktop/ui_docV.py:." \
+            --add-data "MarkViewDesktop/icons_svg/*:icons" \
+            MarkViewDesktop/main.py 
           ls dist  
       - name: Compressing files
         run: |
