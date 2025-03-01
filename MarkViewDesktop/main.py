@@ -7,7 +7,7 @@ from PyQt5.QtWidgets import (QApplication, QMainWindow, QTextEdit,
                              QVBoxLayout, QWidget, QAction)
 import markdown #  para as tabelas
 from ui_docV import Ui_MainWindow
-# sera que vai?? sera?
+# sera que vai?? sera???
 class MarkdownEditor(QMainWindow):
 
     def __init__(self, file_to_open=None):
