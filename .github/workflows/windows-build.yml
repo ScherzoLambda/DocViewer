@@ -3,7 +3,7 @@ name: Build and Release (Windows)
 on:
   push:
     branches:
-      - windows-release
+      - linux-release
     tags: [ "*" ]
     paths:
       - 'MarkViewDesktop/**'
