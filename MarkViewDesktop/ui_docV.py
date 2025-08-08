@@ -25,7 +25,8 @@ def loadSvgIcon(file_path, width=80, height=80):
     return pixmap
 
 class Ui_MainWindow(object):
-    iconspath = "_internal\\"+ "\\icons" + "\\"
+    #iconspath = "_internal\\"+ "\\icons" + "\\"
+    iconspath = "icons_svg" + "\\"
     style_button = """
     QToolTip,
     QPushButton {

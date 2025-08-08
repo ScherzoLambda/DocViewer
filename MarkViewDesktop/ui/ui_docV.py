@@ -27,7 +27,7 @@ def loadSvgIcon(file_path, width=80, height=80):
 
 class Ui_MainWindow(object):
     # iconspath = "_internal\\"+ "\\icons_svg" + "\\"
-    iconspath = path.join(path.dirname(__file__), "icons_svg")
+    iconspath = "resources/icons_svg/" 
     print(iconspath)
     style_button = """
     QToolTip,
@@ -118,7 +118,7 @@ class Ui_MainWindow(object):
         self.headerLayout.setContentsMargins(0, 0, 0, 0)
         # ICON label
         self.icon_label = QtWidgets.QLabel(self.header_frame)
-        self.icon_label.setPixmap(QPixmap(resource_path('icons_svg/docV_icon.png')).scaled(35, 35, QtCore.Qt.KeepAspectRatio))
+        self.icon_label.setPixmap(QPixmap(resource_path('resources/icons_svg/docV_icon.png')).scaled(35, 35, QtCore.Qt.KeepAspectRatio))
         self.icon_label.setMaximumHeight(30)
         self.icon_label.setMaximumWidth(45)
         self.icon_label.setContentsMargins(8,0,0,0)
@@ -133,7 +133,7 @@ class Ui_MainWindow(object):
         spacer = QtWidgets.QSpacerItem(20, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
         # CLOSE WINDOW button
         self.close_btn = QtWidgets.QPushButton(self.header_frame)
-        self.close_btn.setIcon(QIcon(self.iconspath+'/close.png'))
+        self.close_btn.setIcon(QIcon(self.iconspath+'close.png'))
         self.close_btn.setObjectName("close_btn")
         self.close_btn.setStyleSheet(self.style_closeBTN)
         self.close_btn.setMaximumHeight(30)
@@ -141,7 +141,7 @@ class Ui_MainWindow(object):
         #self.close_btn.setToolTip("Close Window")
         # MINIMIZE WINDOW button
         self.minimize_btn = QtWidgets.QPushButton(self.header_frame)
-        self.minimize_btn.setIcon(QIcon(self.iconspath+'/mini2.png'))
+        self.minimize_btn.setIcon(QIcon(self.iconspath+'mini2.png'))
         self.minimize_btn.setObjectName("close_btn")
         self.minimize_btn.setStyleSheet(self.style_m_M)
         self.minimize_btn.setMaximumHeight(30)
@@ -149,7 +149,7 @@ class Ui_MainWindow(object):
         #self.minimize_btn.setToolTip("Minimize Window")
         # MAXIMIZE WINDOW button
         self.maxmize_btn = QtWidgets.QPushButton(self.header_frame)
-        self.maxmize_btn.setIcon(QIcon(self.iconspath+'/maximizar.png'))
+        self.maxmize_btn.setIcon(QIcon(self.iconspath+'maximizar.png'))
         self.maxmize_btn.setObjectName("maxmize_btn")
         self.maxmize_btn.setStyleSheet(self.style_m_M)
         self.maxmize_btn.setMaximumHeight(30)
@@ -240,7 +240,7 @@ class Ui_MainWindow(object):
         self.unList_btn.setObjectName("unList_btn")
         self.unList_btn.setStyleSheet(self.style_button)
         self.unList_btn.setMinimumHeight(25)
-        icon = QtGui.QIcon(self.iconspath+'/menu.png')
+        icon = QtGui.QIcon(self.iconspath+'\\menu.png')
         pixmap = icon.pixmap(QtCore.QSize(100, 100))
         pixmap = pixmap.scaled(128, 128, QtCore.Qt.KeepAspectRatio, QtCore.Qt.SmoothTransformation) # Redimensiona a imagem
         self.unList_btn.setIcon(QtGui.QIcon(pixmap))
@@ -251,7 +251,7 @@ class Ui_MainWindow(object):
         self.nList_btn.setObjectName("nList_btn")
         self.nList_btn.setStyleSheet(self.style_button)
         self.nList_btn.setMinimumHeight(25)
-        icon = QtGui.QIcon(self.iconspath+'/number.png')
+        icon = QtGui.QIcon(self.iconspath+'\\number.png')
         pixmap = icon.pixmap(QtCore.QSize(100, 100))
         pixmap = pixmap.scaled(128, 128, QtCore.Qt.KeepAspectRatio, QtCore.Qt.SmoothTransformation) # Redimensiona a imagem
         self.nList_btn.setIcon(QtGui.QIcon(pixmap))
@@ -263,7 +263,7 @@ class Ui_MainWindow(object):
         self.taskList_btn.setObjectName("taskList_btn")
         self.taskList_btn.setStyleSheet(self.style_button)
         self.taskList_btn.setMinimumHeight(25)
-        icon = QtGui.QIcon(self.iconspath+'/check_2.png')
+        icon = QtGui.QIcon(self.iconspath+'\\check_2.png')
         pixmap = icon.pixmap(QtCore.QSize(100, 100))
         pixmap = pixmap.scaled(128, 128, QtCore.Qt.KeepAspectRatio, QtCore.Qt.SmoothTransformation)
         self.taskList_btn.setIcon(QtGui.QIcon(pixmap))
@@ -390,6 +390,8 @@ class Ui_MainWindow(object):
                 self.splitter.setOrientation(QtCore.Qt.Vertical)
             else:
                 self.splitter.setOrientation(QtCore.Qt.Horizontal)
+                self.splitter.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
+
     #================Funções para os botoes de auxilio do Markdown
     def update_font_size(self):
         font = self.editArea.font()
