@@ -76,10 +76,10 @@ class EditActionsMixin:
             # Exibe o menu de contexto na posição do cursor
             menu.exec_(self.ui.tab_widget.tabBar().mapToGlobal(position))
     # ... incluir updatePreview, inteliComplete, updateCompleteHtml, getMarkdownText, scroll_to_bottom etc
-    def eventFilter(self, obj, event):
-        if obj == self.ui.editArea and event.type() == QtCore.QEvent.KeyRelease and event.key() == QtCore.Qt.Key_Return:
-            self.inteliComplete()
-        return super().eventFilter(obj, event)
+    # def eventFilter(self, obj, event):
+    #     if obj == self.ui.editArea and event.type() == QtCore.QEvent.KeyRelease and event.key() == QtCore.Qt.Key_Return:
+    #         self.inteliComplete()
+    #     return super().eventFilter(obj, event)
     
     def inteliComplete(self):
         cursor = self.ui.editArea.textCursor()

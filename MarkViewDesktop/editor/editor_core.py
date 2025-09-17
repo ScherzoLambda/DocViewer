@@ -1,12 +1,15 @@
+from PySide6 import QtGui
 from PySide6.QtWidgets import QMainWindow, QTextEdit
 from PySide6.QtCore import Qt, QEvent
 from PySide6.QtGui import QIcon, QTextCursor
 from ui.ui_docV import Ui_MainWindow
+from ui.main_window import MainWindow
 
-from editor.actions.edit_actions import EditActionsMixin
-from editor.actions.file_actions import FileActionsMixin
+from actions.edit_actions import EditActionsMixin
+from actions.file_actions import FileActionsMixin
 
-class MarkdownEditor(QMainWindow, EditActionsMixin, FileActionsMixin):
+# class MarkdownEditor(QMainWindow, EditActionsMixin, FileActionsMixin):
+class MarkdownEditor(MainWindow, EditActionsMixin, FileActionsMixin):
     
     def __init__(self, file_to_open=None):
         super().__init__()
@@ -27,25 +30,49 @@ class MarkdownEditor(QMainWindow, EditActionsMixin, FileActionsMixin):
         if file_to_open:
             self.open_file(file_to_open)
         self.setFocus()
+        self.ui.header_frame.installEventFilter(self)
+        self.ui.tab_widget.installEventFilter(self)
+        self.ui.splitter.installEventFilter(self)
 
     def connect_buttons(self):
         self.ui.close_btn.clicked.connect(lambda: self.close())
         self.ui.minimize_btn.clicked.connect(lambda: self.showMinimized())
-        self.ui.maxmize_btn.clicked.connect(lambda: self.restore_or_maximize())
+        self.ui.maxmize_btn.clicked.connect(lambda: self.toggle_maximize_restore())
 
-    def restore_or_maximize(self):
-        self.showNormal() if self.isMaximized() else self.showMaximized()
+    # def restore_or_maximize(self):
+    #     self.showNormal() if self.isMaximized() else self.showMaximized()
 
-    def mousePressEvent(self, event):
-        if event.button() == Qt.LeftButton:
-            self._mousePressPos = event.position().toPoint()
+    # def mousePressEvent(self, event):
+    #     if event.button() == Qt.LeftButton and not self.isMaximized():
+    #         # Verifica se o clique foi na área permitida para arrastar (ex.: barra de título)
+    #         if self.is_draggable_area(event.position().toPoint()):
+    #             self._mousePressPos = event.globalPosition().toPoint()
+    #             self._windowPos = self.pos()
+    #     super().mousePressEvent(event)
 
-    def mouseMoveEvent(self, event):
-        if self._mousePressPos is not None:
-            self.move(self.geometry().topLeft() + event.position().toPoint() - self._mousePressPos)
+    # def is_draggable_area(self, pos):
+    #     # Define a área onde a janela pode ser arrastada (ex.: barra de título)
+    #     # Ajuste conforme o layout da sua UI
+    #     title_bar_height = 40  # Altura da barra de título (ajuste conforme necessário)
+    #     return pos.y() < title_bar_height and pos.x() < self.width()
 
-    def mouseReleaseEvent(self, event):
-        self._mousePressPos = None
+    # # def mouseMoveEvent(self, event):
+    # #     if self._mousePressPos is not None:
+    # #         self.move(self.geometry().topLeft() + event.position().toPoint() - self._mousePressPos)
+    # def mouseMoveEvent(self, event):
+    #     # Move a janela apenas se o arrastar foi iniciado
+    #     if self._mousePressPos is not None:
+    #         global_pos = event.globalPosition().toPoint()
+    #         delta = global_pos - self._mousePressPos
+    #         self.move(self._windowPos + delta)
+    #     super().mouseMoveEvent(event)
+    # # def mouseMoveEvent(self, event):
+    # #      # Move a janela com base na posição do mouse
+    # #     if self._mousePressPos is not None:
+    # #         self.move(self.pos() +event.position().toPoint() - self._mousePressPos)
+
+    # def mouseReleaseEvent(self, event):
+    #     self._mousePressPos = None
     
     def keyPressEvent(self, event):
         if event.type() == QEvent.KeyPress:

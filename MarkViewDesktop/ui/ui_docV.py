@@ -175,7 +175,7 @@ class Ui_MainWindow(object):
         
         self.headerVL.addLayout(self.headerLayout)
         self.centralVL.addWidget(self.header_frame)
-
+        MainWindow.title_bar = self.header_frame
         # ================= Fonte style and Size ===================
         self.fontSize_sp = QSpinBox(self.buttons_frame)
         self.fontSize_sp.setStyleSheet(self.style_utils)
@@ -293,8 +293,10 @@ class Ui_MainWindow(object):
         #self.previewArea.loadFinished.connect(self.scroll_to_bottom)
         #========================================= adding previewArea to splitter
         self.splitter.addWidget(self.previewArea)
-        
+        self.centralwidget.installEventFilter(MainWindow)
+        self.previewArea.installEventFilter(MainWindow)
         MainWindow.setCentralWidget(self.centralwidget)
+        MainWindow.content_widget = self.splitter
 
         self.statusbar = QtWidgets.QStatusBar(MainWindow)
         self.statusbar.setObjectName("statusbar")

@@ -1,4 +1,6 @@
-from PySide6.QtWidgets import QFileDialog, QMessageBox, QInputDialog, QTextEdit, QWidget, QVBoxLayout
+from PySide6.QtWidgets import (
+    QFileDialog, QMessageBox, QInputDialog, QTextEdit, QWidget, QVBoxLayout
+    )
 import os
 
 class FileActionsMixin:
