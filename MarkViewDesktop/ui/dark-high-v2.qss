@@ -1,0 +1,252 @@
+/*
+    Stylesheet inspired by the JetBrains Darcula Theme, as seen in PyCharm.
+    Key colors and design choices are adapted for a general Qt application.
+*/
+
+/*-----Global Settings-----*/
+QWidget {
+    background-color: #3C3F41; /* Default background for panels and toolbars */
+    color: #A9B7C6;            /* Default text color */
+    border: none;
+    font-size: 10pt;
+}
+
+/*-----Main Content Areas (e.g., Text Editors)-----*/
+QTextEdit, QPlainTextEdit, QTableView {
+    background-color: #2B2B2B; /* Darker background for content/editing areas */
+    color: #A9B7C6;
+    border: 1px solid #555555;
+    border-radius: 4px;
+}
+
+/*-----Labels & Disabled States-----*/
+QLabel {
+    background-color: transparent;
+}
+
+QWidget:disabled {
+    color: #808080;
+    background-color: #3C3F41;
+}
+
+/*-----Main Menu and Status Bar-----*/
+QMenuBar, QStatusBar {
+    background-color: #3C3F41;
+    color: #A9B7C6;
+}
+QMenuBar {
+    border-bottom: 1px solid #2B2B2B;
+}
+QStatusBar {
+    border-top: 1px solid #2B2B2B;
+}
+
+QMenuBar::item {
+    background-color: transparent;
+    padding: 5px 10px;
+}
+
+QMenuBar::item:selected {
+    background-color: #4B6EAF;
+    color: #FFFFFF;
+}
+
+/*-----Context Menus-----*/
+QMenu {
+    background-color: #2B2B2B;
+    border: 1px solid #555555;
+    color: #A9B7C6;
+    padding: 5px;
+}
+
+QMenu::item:selected {
+    background-color: #4B6EAF;
+    color: #FFFFFF;
+}
+
+QMenu::separator {
+    height: 1px;
+    background-color: #555555;
+    margin: 5px 0;
+}
+
+/*-----Buttons-----*/
+QPushButton {
+    background-color: #4B4F52;
+    color: #A9B7C6;
+    border: 1px solid #666666;
+    border-radius: 4px;
+    padding: 6px 12px;
+}
+
+QPushButton:hover {
+    background-color: #55595C;
+}
+
+QPushButton:pressed {
+    background-color: #404345;
+}
+
+/* Purple Accent Button (like 'Run') */
+/* In your code, name the button: my_button.setObjectName("AccentButton") */
+QPushButton#AccentButton {
+    background-color: #46325E;
+    color: #A9B7C6;
+    border: 1px solid #735399;
+}
+QPushButton#AccentButton:hover {
+    background-color: #563E75;
+}
+QPushButton#AccentButton:pressed {
+    background-color: #3B2A4F;
+}
+
+/*-----Input Fields-----*/
+QLineEdit, QSpinBox, QDoubleSpinBox, QDateTimeEdit, QComboBox {
+    background-color: #2B2B2B;
+    color: #A9B7C6;
+    border: 1px solid #555555;
+    border-radius: 4px;
+    padding: 5px;
+}
+
+QLineEdit:focus, QSpinBox:focus, QDoubleSpinBox:focus, QDateTimeEdit:focus, QComboBox:focus {
+    border: 1px solid #4F9EE3; /* Blue border on focus */
+}
+
+/*-----ComboBox Specifics-----*/
+QComboBox:on {
+    border: 1px solid #4F9EE3;
+}
+
+QComboBox QAbstractItemView {
+    background-color: #2B2B2B;
+    color: #A9B7C6;
+    border: 1px solid #555555;
+    selection-background-color: #4B6EAF;
+    selection-color: #FFFFFF;
+    outline: 0;
+}
+
+QComboBox::drop-down {
+    border-left: 1px solid #555555;
+    width: 20px;
+}
+
+/*-----SpinBox Buttons-----*/
+QSpinBox::up-button, QSpinBox::down-button {
+    background-color: #3C3F41;
+    border-radius: 2px;
+}
+QSpinBox::up-button:hover, QSpinBox::down-button:hover {
+    background-color: #4B6EAF;
+}
+
+/*-----Checkboxes & RadioButtons-----*/
+QCheckBox::indicator, QRadioButton::indicator {
+    background-color: #2B2B2B;
+    border: 1px solid #888888;
+    width: 14px;
+    height: 14px;
+}
+QCheckBox::indicator { border-radius: 3px; }
+QRadioButton::indicator { border-radius: 8px; }
+
+QCheckBox::indicator:checked, QRadioButton::indicator:checked {
+    background-color: #4B6EAF;
+    border-color: #4B6EAF;
+}
+QCheckBox::indicator:checked {
+    image: url(://checkbox.png); /* Needs a white checkmark icon */
+}
+
+/*-----Tab Widget (Crucial for the IDE look)-----*/
+QTabWidget::pane {
+    background-color: #2B2B2B;
+    border: 1px solid #555555;
+    border-top: none;
+}
+
+QTabBar::tab {
+    background-color: #3C3F41; /* Unselected tab color */
+    color: #A9B7C6;
+    padding: 8px 15px;
+    border: 1px solid #3C3F41;
+    border-bottom: none;
+    border-top-left-radius: 4px;
+    border-top-right-radius: 4px;
+}
+
+QTabBar::tab:hover {
+    background-color: #4B4F52;
+}
+
+QTabBar::tab:selected {
+    background-color: #2B2B2B; /* Matches the pane background */
+    color: #FFFFFF;
+    border-color: #555555;
+    border-bottom: 2px solid #4F9EE3; /* Blue accent underline */
+    padding-bottom: 6px; /* Adjust padding to account for the border */
+}
+
+/*-----Lists and Trees (Project View)-----*/
+QTreeView, QListView {
+    background-color: #3C3F41;
+    border: 1px solid #2B2B2B;
+    outline: 0;
+}
+
+QTreeView::item:hover, QListView::item:hover {
+    background-color: #4B4F52;
+}
+
+QTreeView::item:selected, QListView::item:selected {
+    background-color: #4B6EAF; /* Focused selection color */
+    color: #FFFFFF;
+}
+/* Note: Unfocused selection color is hard to control with QSS alone */
+
+QHeaderView::section {
+    background-color: #2B2B2B;
+    color: #A9B7C6;
+    padding: 6px;
+    border: 1px solid #3C3F41;
+    font-weight: bold;
+}
+
+/*-----ScrollBars-----*/
+QScrollBar:vertical, QScrollBar:horizontal {
+    background: #3C3F41;
+    border: none;
+}
+QScrollBar:vertical { width: 10px; }
+QScrollBar:horizontal { height: 10px; }
+
+QScrollBar::handle {
+    background: #55595C;
+    border-radius: 5px;
+    min-height: 20px;
+    min-width: 20px;
+}
+QScrollBar::handle:hover {
+    background: #6B6F72;
+}
+
+QScrollBar::add-line, QScrollBar::sub-line {
+    background: none;
+    border: none;
+}
+
+/*-----ProgressBar-----*/
+QProgressBar {
+    background-color: #2B2B2B;
+    border: 1px solid #555555;
+    border-radius: 4px;
+    text-align: center;
+    color: #A9B7C6;
+}
+
+QProgressBar::chunk {
+    background-color: #46325E; /* Purple chunk */
+    border-radius: 3px;
+}

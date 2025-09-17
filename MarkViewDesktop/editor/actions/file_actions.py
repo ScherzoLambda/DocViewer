@@ -9,8 +9,8 @@ class FileActionsMixin:
         new_tab = QWidget()
         layout = QVBoxLayout()
         text_edit = QTextEdit()
+        # text_edit.setAcceptRichText(False)
         self.actual_text_edit = text_edit
-        text_edit.setStyleSheet("background-color: #DCDCDC; color:black")
         text_edit.setTabStopDistance(32)
         layout.addWidget(text_edit)
         layout.setContentsMargins(4, 4, 4, 4)

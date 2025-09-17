@@ -20,7 +20,7 @@ class MainWindow(QMainWindow):
 
         self.setWindowFlags(Qt.FramelessWindowHint)
         self.setAttribute(Qt.WA_TranslucentBackground)
-        self.setStyleSheet("background-color: rgb(150, 150, 150);")
+        # self.setStyleSheet("background-color: rgb(150, 150, 150);")
         self.setGeometry(100, 100, 600, 450)
         self.border_size = 5
 

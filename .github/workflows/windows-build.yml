@@ -35,9 +35,9 @@ jobs:
       - name: Build with PyInstaller
         run: |
             pyinstaller --noconsole --name DocViewer `
-            --icon="MarkViewDesktop/icons_svg/doc_icon.ico" `
-            --add-data "MarkViewDesktop/ui_docV.py;." `
-            --add-data "MarkViewDesktop/icons_svg/*;icons" `
+            --icon="MarkViewDesktop/resources/icons_svg/doc_icon.ico" `
+            --add-data "MarkViewDesktop/ui/ui_docV.py;." `
+            --add-data "MarkViewDesktop/resources/icons_svg/*;resources/icons_svg" `
             MarkViewDesktop/main.py
 
       # 5) Compactar o executável (.exe) em zip

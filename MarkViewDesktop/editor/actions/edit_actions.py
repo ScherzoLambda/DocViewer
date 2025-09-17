@@ -9,9 +9,10 @@ class EditActionsMixin:
     def init_ui(self):
         self.ui.statusBarMessage()
         self.ui.menu = self.create_menu()
-        self.ui.splitter.setStyleSheet("QSplitter::handle {background-color:#dfe2e5; ...}")
+        # self.ui.splitter.setStyleSheet("QSplitter::handle {background-color:#dfe2e5; height: 30px;}")
         self.ui.editArea.setFocus()
         self.ui.previewArea.setZoomFactor(0.8)
+
         self.setGeometry(100, 100, 800, 600)
         self.setWindowTitle('DocViewer')
         self.ui.file_btn.clicked.connect(self.show_menu)
@@ -38,7 +39,7 @@ class EditActionsMixin:
         save_file_act.triggered.connect(self.saveFile)
         menu.addAction(save_file_act)
 
-        menu.setFixedWidth(210)
+        # menu.setFixedWidth(180)
         return menu
 
     def show_menu(self):
@@ -142,6 +143,7 @@ class EditActionsMixin:
                     padding: 20px;
                     color: #E6edf3;
                     background-color: #161b22;
+                    border: 1px solid #30363d;
                 }}
                 h1, h2, h3, h4, h5, h6 {{
                     border-bottom: 1px solid #eaecef;

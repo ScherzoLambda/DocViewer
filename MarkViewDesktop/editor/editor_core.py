@@ -8,7 +8,6 @@ from ui.main_window import MainWindow
 from actions.edit_actions import EditActionsMixin
 from actions.file_actions import FileActionsMixin
 
-# class MarkdownEditor(QMainWindow, EditActionsMixin, FileActionsMixin):
 class MarkdownEditor(MainWindow, EditActionsMixin, FileActionsMixin):
     
     def __init__(self, file_to_open=None):
@@ -39,41 +38,6 @@ class MarkdownEditor(MainWindow, EditActionsMixin, FileActionsMixin):
         self.ui.minimize_btn.clicked.connect(lambda: self.showMinimized())
         self.ui.maxmize_btn.clicked.connect(lambda: self.toggle_maximize_restore())
 
-    # def restore_or_maximize(self):
-    #     self.showNormal() if self.isMaximized() else self.showMaximized()
-
-    # def mousePressEvent(self, event):
-    #     if event.button() == Qt.LeftButton and not self.isMaximized():
-    #         # Verifica se o clique foi na área permitida para arrastar (ex.: barra de título)
-    #         if self.is_draggable_area(event.position().toPoint()):
-    #             self._mousePressPos = event.globalPosition().toPoint()
-    #             self._windowPos = self.pos()
-    #     super().mousePressEvent(event)
-
-    # def is_draggable_area(self, pos):
-    #     # Define a área onde a janela pode ser arrastada (ex.: barra de título)
-    #     # Ajuste conforme o layout da sua UI
-    #     title_bar_height = 40  # Altura da barra de título (ajuste conforme necessário)
-    #     return pos.y() < title_bar_height and pos.x() < self.width()
-
-    # # def mouseMoveEvent(self, event):
-    # #     if self._mousePressPos is not None:
-    # #         self.move(self.geometry().topLeft() + event.position().toPoint() - self._mousePressPos)
-    # def mouseMoveEvent(self, event):
-    #     # Move a janela apenas se o arrastar foi iniciado
-    #     if self._mousePressPos is not None:
-    #         global_pos = event.globalPosition().toPoint()
-    #         delta = global_pos - self._mousePressPos
-    #         self.move(self._windowPos + delta)
-    #     super().mouseMoveEvent(event)
-    # # def mouseMoveEvent(self, event):
-    # #      # Move a janela com base na posição do mouse
-    # #     if self._mousePressPos is not None:
-    # #         self.move(self.pos() +event.position().toPoint() - self._mousePressPos)
-
-    # def mouseReleaseEvent(self, event):
-    #     self._mousePressPos = None
-    
     def keyPressEvent(self, event):
         if event.type() == QEvent.KeyPress:
             match (event.key(), event.modifiers()):
@@ -86,7 +50,6 @@ class MarkdownEditor(MainWindow, EditActionsMixin, FileActionsMixin):
                 case (Qt.Key_H, Qt.ControlModifier): self.syntaxHelpAndHints()
                 case (Qt.Key_J, Qt.ControlModifier): self.removeSyntaxAndHint()
         super().keyPressEvent(event)
-
 
     def onTabChange(self, index):
         self.ui.editArea = self.getCurrentTextEdit(index)
@@ -130,7 +93,6 @@ class MarkdownEditor(MainWindow, EditActionsMixin, FileActionsMixin):
         
         ##cursor.movePosition(QtGui.QTextCursor.StartOfLine, QtGui.QTextCursor.MoveAnchor)
         self.ui.editArea.setTextCursor(cursor) 
-        
 
     def getCurrentTextEdit(self, current_index):
         """Recupera o QTextEdit da aba atualmente selecionada"""
