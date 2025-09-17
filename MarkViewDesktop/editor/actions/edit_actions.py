@@ -143,7 +143,7 @@ class EditActionsMixin:
                     padding: 20px;
                     color: #E6edf3;
                     background-color: #161b22;
-                    border: 1px solid #30363d;
+                    border: 1px solid #3399FF;
                 }}
                 h1, h2, h3, h4, h5, h6 {{
                     border-bottom: 1px solid #eaecef;
