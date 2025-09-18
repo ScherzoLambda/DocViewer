@@ -2,6 +2,7 @@ import os
 import sys
 
 from PySide6.QtCore import QFile, QIODevice
+from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import QApplication
 from editor.editor_core import MarkdownEditor
 
@@ -16,7 +17,6 @@ def resource_path(relative_path: str) -> str:
 
 def main():
     app = QApplication(sys.argv)
-
     style_file = resource_path("ui/dark-high-v0.qss")
     style_sheet_file = QFile(style_file)
     print(style_sheet_file)

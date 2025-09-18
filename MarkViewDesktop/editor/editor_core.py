@@ -1,12 +1,13 @@
 from PySide6 import QtGui
-from PySide6.QtWidgets import QMainWindow, QTextEdit
 from PySide6.QtCore import Qt, QEvent
 from PySide6.QtGui import QIcon, QTextCursor
-from ui.ui_docV import Ui_MainWindow
-from ui.main_window import MainWindow
+from PySide6.QtWidgets import QTextEdit
 
 from editor.actions.edit_actions import EditActionsMixin
 from editor.actions.file_actions import FileActionsMixin
+from ui.main_window import MainWindow
+from ui.ui_docV import Ui_MainWindow
+
 
 class MarkdownEditor(MainWindow, EditActionsMixin, FileActionsMixin):
     
@@ -62,7 +63,7 @@ class MarkdownEditor(MainWindow, EditActionsMixin, FileActionsMixin):
         plain_text = textEdit.toPlainText()
         self.html_text_ = self.getMarkdownText(plain_text)
         self.updateCompleteHtml()
-        self.ui.previewArea.setHtml(self.complete_html)
+        self.ui.previewArea2.setHtml(self.complete_html)
             
     def inteliComplete(self):
         cursor = self.ui.editArea.textCursor()

@@ -1,7 +1,7 @@
 pyinstaller --noconsole --name DocViewer --onefile \
-  --icon="resources/icons_svg/doc_icon.ico" \
-  --add-data "ui/dark-high-v0.qss:ui" \
-  --add-data "resources/icons_svg/*:resources/icons_svg" \
+  --icon="resources/icons_svg/favicon.ico" \
+  --add-data "MarkViewDesktop/ui/dark-high-v0.qss:ui" \
+  --add-data "MarkViewDesktop/resources/icons_svg/*:resources/icons_svg" \
   --hidden-import="ui.ui_utils" \
   --hidden-import="editor.editor_core" \
   --hidden-import="editor.actions.file_actions" \
@@ -13,4 +13,4 @@ pyinstaller --noconsole --name DocViewer --onefile \
   --exclude-module PySide6.QtCharts \
   --exclude-module PySide6.QtWebEngineWidgets \
   --strip \
-  main.py
+  MarkViewDesktop/main.py

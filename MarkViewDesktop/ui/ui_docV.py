@@ -41,8 +41,7 @@ class Ui_MainWindow(object):
     iconspath = resource_path("resources/icons_svg/")
     print(iconspath)
     style_button = """
-    QToolTip,
-    QPushButton {
+    QToolTip,QPushButton {
          /* Cor de fundo padrão */
         border: 2px solid #161b22; /* Borda */
         color: white; /* Cor do texto */
@@ -54,11 +53,28 @@ class Ui_MainWindow(object):
     }
     """
     style_utils = """
-         /* Cor de fundo padrão */
-        border: 2px solid #161b22; /* Borda */
-        color: white; /* Cor do texto */
-        font-size: 16px;
-        border-radius: 4px; /* Borda arredondada */
+        QComboBox
+        {
+            background-color: #1C1C1C;
+            color: #FFFFFF;
+            border: 1px solid #666666;
+        }
+        QComboBox:hover
+        {
+            border: 1px solid #3399FF;
+        }
+        QComboBox QAbstractItemView::item:hover {
+            border: 1px solid #3399FF;
+            background-color: #8C8C8C;
+        }
+        /*QComboBox QAbstractItemView {
+            border: 1px solid #3399FF;
+            border-radius: 6px;
+            background-color: #2b2b2b;
+            selection-background-color: #3399ff;
+            selection-color: #3399ff;
+            padding: 5px; /* Espaçamento interno da lista */
+        }*/
     """
     style_closeBTN = """
     QPushButton {
@@ -86,16 +102,14 @@ class Ui_MainWindow(object):
     """
     style_splitter = """
     QSplitter::handle {
-        background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
-                                          stop: 0 #333333, stop: 1 #444444);
+        background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,stop: 0 #333333, stop: 1 #444444);
         border: 1px solid #666666;
         height: 15px;
         border-radius: 4px;
     }
     
     QSplitter::handle:hover {
-        background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
-                                          stop: 0 #444444, stop: 1 #555555);
+        background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,stop: 0 #444444, stop: 1 #555555);
     }
     """
     style_preview = """
@@ -161,12 +175,18 @@ class Ui_MainWindow(object):
         self.file_btn.setText("File")
         self.file_btn.setMaximumHeight(30)
         self.file_btn.setMaximumWidth(50)
+        # SETTINGS button
+        self.settings_btn = QtWidgets.QPushButton(self.header_frame)
+        self.settings_btn.setContentsMargins(8,0,0,0)
+        self.settings_btn.setText("Configurações")
+        self.settings_btn.setMaximumHeight(30)
+        self.settings_btn.setMaximumWidth(50)
 
         spacer = QtWidgets.QSpacerItem(10, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
         # CLOSE WINDOW button
         self.close_btn = QtWidgets.QPushButton(self.header_frame)
         self.close_btn.setIcon(QIcon(
-            loadSvgIconColored(self.iconspath+'close-new.svg',color='#ffffff')))
+            loadSvgIconColored(self.iconspath+'close-new.svg')))
         self.close_btn.setObjectName("close_btn")
         self.close_btn.setStyleSheet(self.style_closeBTN)
         self.close_btn.setMaximumHeight(30)
@@ -174,7 +194,8 @@ class Ui_MainWindow(object):
         #self.close_btn.setToolTip("Close Window")
         # MINIMIZE WINDOW button
         self.minimize_btn = QtWidgets.QPushButton(self.header_frame)
-        self.minimize_btn.setIcon(QIcon(self.iconspath+'mini2.png'))
+        self.minimize_btn.setIcon(QIcon(
+            loadSvgIconColored(self.iconspath+'mini-new.svg')))
         self.minimize_btn.setObjectName("close_btn")
         self.minimize_btn.setStyleSheet(self.style_m_M)
         self.minimize_btn.setMaximumHeight(30)
@@ -182,7 +203,8 @@ class Ui_MainWindow(object):
         #self.minimize_btn.setToolTip("Minimize Window")
         # MAXIMIZE WINDOW button
         self.maxmize_btn = QtWidgets.QPushButton(self.header_frame)
-        self.maxmize_btn.setIcon(QIcon(self.iconspath+'maximizar.png'))
+        self.maxmize_btn.setIcon(QIcon(
+            loadSvgIconColored(self.iconspath+'maxi-new.svg',color='#ffffff')))
         self.maxmize_btn.setObjectName("maxmize_btn")
         self.maxmize_btn.setStyleSheet(self.style_m_M)
         self.maxmize_btn.setMaximumHeight(30)
@@ -201,6 +223,7 @@ class Ui_MainWindow(object):
         # adding widgets to layout
         self.headerLayout.addWidget(self.icon_label)
         self.headerLayout.addWidget(self.file_btn)
+        self.headerLayout.addWidget(self.settings_btn)
         self.headerLayout.addItem(spacer)
         self.headerLayout.addWidget(self.minimize_btn)
         self.headerLayout.addWidget(self.maxmize_btn)
@@ -220,7 +243,8 @@ class Ui_MainWindow(object):
         self.fontStyle_cb = QComboBox(self.buttons_frame)
         self.fontStyle_cb.setToolTip("Fonte do texto")
         self.fontStyle_cb.setMaximumWidth(130)
-        # self.fontStyle_cb.setStyleSheet(self.style_utils)
+        self.fontStyle_cb.setMaximumHeight(30)
+        self.fontStyle_cb.setStyleSheet(self.style_utils)
         self.fontStyle_cb.addItems(["Arial", "Courier New", "Times New Roman"])
         self.fontStyle_cb.currentIndexChanged.connect(self.update_font_style)
         

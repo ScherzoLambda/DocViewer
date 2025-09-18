@@ -21,12 +21,17 @@ def loadSvgIconColored(file_path, width=80, height=80, color=None):
             color = QColor(color)  # Converte string (ex.: "#FF0000") para QColor
         elif not isinstance(color, QColor):
             raise ValueError("O parâmetro 'color' deve ser uma string (ex.: '#FF0000') ou um QColor")
-
-        # Define o modo de composição para aplicar a cor apenas nas áreas preenchidas do SVG
-        painter.setCompositionMode(QPainter.CompositionMode_SourceIn)
-        painter.setBrush(QColor(color))  # Define a cor como pincel
-        painter.setPen(Qt.NoPen)  # Remove contornos para evitar linhas indesejadas
-        painter.drawRect(pixmap.rect())  # Aplica a cor às áreas do SVG
-
+        #
+        # # Define o modo de composição para aplicar a cor apenas nas áreas preenchidas do SVG
+        # painter.setCompositionMode(QPainter.CompositionMode_SourceIn)
+        # painter.setBrush(QColor(color))  # Define a cor como pincel
+        # painter.setPen(Qt.NoPen)  # Remove contornos para evitar linhas indesejadas
+        # painter.drawRect(pixmap.rect())  # Aplica a cor às áreas do SVG
+    else:
+        color = QColor('#ffffff')
+    painter.setCompositionMode(QPainter.CompositionMode_SourceIn)
+    painter.setBrush(QColor(color))
+    painter.setPen(Qt.NoPen)
+    painter.drawRect(pixmap.rect())
     painter.end()
     return pixmap
