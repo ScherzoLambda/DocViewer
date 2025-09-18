@@ -5,8 +5,8 @@ from PySide6.QtGui import QIcon, QTextCursor
 from ui.ui_docV import Ui_MainWindow
 from ui.main_window import MainWindow
 
-from actions.edit_actions import EditActionsMixin
-from actions.file_actions import FileActionsMixin
+from editor.actions.edit_actions import EditActionsMixin
+from editor.actions.file_actions import FileActionsMixin
 
 class MarkdownEditor(MainWindow, EditActionsMixin, FileActionsMixin):
     

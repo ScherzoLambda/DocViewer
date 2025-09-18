@@ -1,23 +1,31 @@
 import sys
-from os import path
+import os
 from PySide6 import QtCore, QtGui, QtWidgets
 from PySide6.QtCore import Qt
-from PySide6.QtWidgets import QSplitter, QLabel, QSpinBox, QComboBox
+from PySide6.QtWidgets import QSplitter, QSpinBox, QComboBox, QTextBrowser
 from PySide6.QtGui import QIcon, QPixmap, QPainter, QFont, QTextCursor
 from PySide6.QtSvg import QSvgRenderer
-from PySide6.QtWebEngineWidgets import QWebEngineView
+# from PySide6.QtWebEngineWidgets import QWebEngineView
 
-from ui_utils import loadSvgIconColored
+from ui.ui_utils import loadSvgIconColored
+
+#
+# def resource_path(relative_path):
+#     """ Get the absolute path to the resource, works for dev and for PyInstaller """
+#     try:
+#         base_path = sys._MEIPASS
+#     except AttributeError:
+#         base_path = path.abspath(".")
+#
+#     return path.join(base_path, relative_path)
 
 
-def resource_path(relative_path):
-    """ Get the absolute path to the resource, works for dev and for PyInstaller """
-    try:
-        base_path = sys._MEIPASS
-    except AttributeError:
-        base_path = path.abspath(".")
-
-    return path.join(base_path, relative_path)
+def resource_path(relative_path: str) -> str:
+    """Obtém o caminho absoluto do recurso, funciona no dev e no executável."""
+    if hasattr(sys, "_MEIPASS"):
+        # quando rodando no executável do PyInstaller
+        return os.path.join(sys._MEIPASS, relative_path)
+    return os.path.join(os.path.abspath("."), relative_path)
 
 def loadSvgIcon(file_path, width=80, height=80):
     svg_renderer = QSvgRenderer(file_path)
@@ -30,7 +38,7 @@ def loadSvgIcon(file_path, width=80, height=80):
 
 class Ui_MainWindow(object):
     # iconspath = "_internal\\"+ "\\icons_svg" + "\\"
-    iconspath = "resources/icons_svg/" 
+    iconspath = resource_path("resources/icons_svg/")
     print(iconspath)
     style_button = """
     QToolTip,
@@ -315,16 +323,18 @@ class Ui_MainWindow(object):
         #========================================= adding splitter to centralVL
         self.centralVL.addWidget(self.splitter)
         
-        self.previewArea = QWebEngineView()
-        self.previewArea.setContentsMargins(5,5,5,5)
-        self.previewArea.setFocusPolicy(Qt.StrongFocus)
+        # self.previewArea = QWebEngineView()
+        self.previewArea2 = QTextBrowser()
+        # self.previewArea.setContentsMargins(5,5,5,5)
+        # self.previewArea.setFocusPolicy(Qt.StrongFocus)
         # self.previewArea.setStyleSheet(self.style_preview)
-        self.previewArea.setContextMenuPolicy(QtCore.Qt.NoContextMenu) # Desabilita menu de contexto. 0=Qt.NoContextMenu
+        # self.previewArea.setContextMenuPolicy(QtCore.Qt.NoContextMenu) # Desabilita menu de contexto. 0=Qt.NoContextMenu
         #self.previewArea.loadFinished.connect(self.scroll_to_bottom)
         #========================================= adding previewArea to splitter
-        self.splitter.addWidget(self.previewArea)
+        # self.splitter.addWidget(self.previewArea)
+        self.splitter.addWidget(self.previewArea2)
         self.centralwidget.installEventFilter(MainWindow)
-        self.previewArea.installEventFilter(MainWindow)
+        # self.previewArea.installEventFilter(MainWindow)
         MainWindow.setCentralWidget(self.centralwidget)
         MainWindow.content_widget = self.splitter
 
@@ -399,7 +409,7 @@ class Ui_MainWindow(object):
     def swapWidgetOnSplitter(self):
         # Obtém os índices atuais dos widgets no splitter
         index_tabWidget = self.splitter.indexOf(self.tab_widget)
-        index_preview_area = self.splitter.indexOf(self.previewArea)
+        index_preview_area = self.splitter.indexOf(self.previewArea2)
         # print(index_tabWidget, "wid_1", sep="|")
         # print(index_preview_area, "wid_2", sep="|")
         if index_tabWidget < index_preview_area:
@@ -407,13 +417,13 @@ class Ui_MainWindow(object):
             self.splitter.widget(index_tabWidget).setParent(None)
             self.splitter.widget(index_preview_area-1).setParent(None)
             # Adiciona os widgets de volta em ordem trocada
-            self.splitter.insertWidget(index_tabWidget, self.previewArea)
+            self.splitter.insertWidget(index_tabWidget, self.previewArea2)
             self.splitter.insertWidget(index_preview_area, self.tab_widget)
         else:
             self.splitter.widget(index_tabWidget-1).setParent(None)
             self.splitter.widget(index_preview_area).setParent(None)  
             # Adiciona os widgets de volta em ordem trocada
-            self.splitter.insertWidget(index_tabWidget, self.previewArea)
+            self.splitter.insertWidget(index_tabWidget, self.previewArea2)
             self.splitter.insertWidget(index_preview_area, self.tab_widget)
     
     def toggle_splitter_orientation(self):

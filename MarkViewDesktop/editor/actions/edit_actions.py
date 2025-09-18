@@ -11,7 +11,7 @@ class EditActionsMixin:
         self.ui.menu = self.create_menu()
         # self.ui.splitter.setStyleSheet("QSplitter::handle {background-color:#dfe2e5; height: 30px;}")
         self.ui.editArea.setFocus()
-        self.ui.previewArea.setZoomFactor(0.8)
+        # self.ui.previewArea.setZoomFactor(0.8)
 
         self.setGeometry(100, 100, 800, 600)
         self.setWindowTitle('DocViewer')
@@ -124,8 +124,9 @@ class EditActionsMixin:
         self.verifyChangesAndSetTabName()
         
         self.html_text_ = self.getMarkdownText(markdown_text)
+        print(self.html_text_)
         self.updateCompleteHtml()
-        self.ui.previewArea.setHtml(self.complete_html)
+        self.ui.previewArea2.setHtml(self.complete_html)
         ### TODO: Permitir ativar e desativar esta funcionalidade
         ##self.ui.previewArea.loadFinished.connect(self.scroll_to_bottom)
 
@@ -179,21 +180,24 @@ class EditActionsMixin:
                     padding: .2em .4em;
                     margin: 0;
                     font-size: 85%;
-                    white-space: break-spaces;
+                    white-space: pre-wrap;
                     background-color: #afb8c133;
                     border-radius: 6px;
+                    display: inline-block;
                 }}
                 pre code {{
                     background-color: #30363d;
                     padding: 0;
                     font-size: 100%;
                 }}
+                .codehilite
                 pre {{
                     overflow: auto;
                     overflow-x: auto;
                     overflow-y: auto;
+                    display: block;
                     background-color: #30363d;
-                    padding: 1em;
+                    /*padding: 1em;*/
                     overflow: auto;
                 }}
                 .codehilite .k {{ color: #f92672; }}  /* Palavras-chave em rosa */
@@ -232,7 +236,7 @@ class EditActionsMixin:
                 /* Espaçamento (não precisa de estilização, mas está incluído para clareza) */
                 .codehilite .w {{ color: inherit; }}  
                 table {{
-                    border-collapse: collapse;
+                    /*border-collapse: collapse;*/
                     border-spacing: 0;
                     max-width: 100%;
                     display: block;
