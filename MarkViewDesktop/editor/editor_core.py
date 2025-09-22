@@ -23,8 +23,6 @@ class MarkdownEditor(MainWindow, EditActionsMixin, FileActionsMixin):
         self._mousePressPos = None
 
         self.init_ui()
-        self.setWindowFlags(Qt.FramelessWindowHint)
-        self.setWindowIcon(QIcon("doc_icon.ico"))
 
         self.connect_buttons()
         if file_to_open:
@@ -33,6 +31,8 @@ class MarkdownEditor(MainWindow, EditActionsMixin, FileActionsMixin):
         self.ui.header_frame.installEventFilter(self)
         self.ui.tab_widget.installEventFilter(self)
         self.ui.splitter.installEventFilter(self)
+        self.ui.previewArea2.installEventFilter(self)
+        self.ui.tab_widget.installEventFilter(self)
 
     def connect_buttons(self):
         self.ui.close_btn.clicked.connect(lambda: self.close())
@@ -54,7 +54,7 @@ class MarkdownEditor(MainWindow, EditActionsMixin, FileActionsMixin):
 
     def onTabChange(self, index):
         self.ui.editArea = self.getCurrentTextEdit(index)
-        if(self.ui.editArea is not None):
+        if self.ui.editArea is not None:
             self.updateAfterTabChange(self.ui.editArea)
             self.ui.editArea.installEventFilter(self)
         #print(f"Aba mudada: {index}")

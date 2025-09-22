@@ -7,18 +7,7 @@ from PySide6.QtGui import QIcon, QPixmap, QPainter, QFont, QTextCursor
 from PySide6.QtSvg import QSvgRenderer
 # from PySide6.QtWebEngineWidgets import QWebEngineView
 
-from ui.ui_utils import loadSvgIconColored
-
-#
-# def resource_path(relative_path):
-#     """ Get the absolute path to the resource, works for dev and for PyInstaller """
-#     try:
-#         base_path = sys._MEIPASS
-#     except AttributeError:
-#         base_path = path.abspath(".")
-#
-#     return path.join(base_path, relative_path)
-
+from ui.ui_utils import *
 
 def resource_path(relative_path: str) -> str:
     """Obtém o caminho absoluto do recurso, funciona no dev e no executável."""
@@ -40,89 +29,7 @@ class Ui_MainWindow(object):
     # iconspath = "_internal\\"+ "\\icons_svg" + "\\"
     iconspath = resource_path("resources/icons_svg/")
     print(iconspath)
-    style_button = """
-    QToolTip,QPushButton {
-         /* Cor de fundo padrão */
-        border: 2px solid #161b22; /* Borda */
-        color: white; /* Cor do texto */
-        
-        border-radius: 4px; /* Borda arredondada */
-    }
-    QPushButton:hover {
-        background-color: #DCDCDC; /* Cor de fundo quando o mouse está sobre o botão */
-    }
-    """
-    style_utils = """
-        QComboBox
-        {
-            background-color: #1C1C1C;
-            color: #FFFFFF;
-            border: 1px solid #666666;
-        }
-        QComboBox:hover
-        {
-            border: 1px solid #3399FF;
-        }
-        QComboBox QAbstractItemView::item:hover {
-            border: 1px solid #3399FF;
-            background-color: #8C8C8C;
-        }
-        /*QComboBox QAbstractItemView {
-            border: 1px solid #3399FF;
-            border-radius: 6px;
-            background-color: #2b2b2b;
-            selection-background-color: #3399ff;
-            selection-color: #3399ff;
-            padding: 5px; /* Espaçamento interno da lista */
-        }*/
-    """
-    style_closeBTN = """
-    QPushButton {
-        border: none;
-        background-color: transparent;
-        border: 1px solid #f4696b;
-    }
-    QPushButton:hover {
-        background-color: #f4696b;  /* cor de fundo*/
-    }
-    """
-    style_m_M = """
-    QPushButton {
-        font-size: 18px;
-        color: #000000;
-        border: 1px solid #007BFF;
-        border-radius: 4px;
-        font-weight: bold;
-        background-color: transparent;
-    }
-    QPushButton:hover {
-        background-color: #55AAFF; /* Lighter accent on hover */
-        border-color: #3399FF;  
-    }
-    """
-    style_splitter = """
-    QSplitter::handle {
-        background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,stop: 0 #333333, stop: 1 #444444);
-        border: 1px solid #666666;
-        height: 15px;
-        border-radius: 4px;
-    }
-    
-    QSplitter::handle:hover {
-        background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,stop: 0 #444444, stop: 1 #555555);
-    }
-    """
-    style_preview = """
-    QWebEngineView {
-        background-color: #2B2B2B;
-        border: 1px solid #3399FF;
-        border-radius: 4px;
-    }
 
-    QWebEngineView:focus {
-        border: 1px solid #4F9EE3;
-    }
-    """
     def setupUi(self, MainWindow):
         self.new_file_count = 0
         self.open_files = {}
@@ -131,22 +38,24 @@ class Ui_MainWindow(object):
         self.act_op_file = None
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(539, 307)
-        # MainWindow.setStyleSheet("background-color: rgb(117, 117, 117);")
+
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
         self.centralVL = QtWidgets.QVBoxLayout(self.centralwidget)
         self.centralVL.setObjectName("centralVL")
-        #self.centralVL.setSpacing(0)
+        self.centralVL.setSpacing(0)
         self.centralVL.setContentsMargins(0, 0, 0, 0)
 
         # Frames for layouts
         # header_frame, buttons_frame
         self.header_frame = QtWidgets.QFrame(self.centralwidget)
-        # self.header_frame.setStyleSheet("background-color: rgb(117, 117, 117);")
+        # self.header_frame.setStyleSheet(self.style_button)
+        self.header_frame.setMinimumHeight(50)
         # self.header_frame.setObjectName("header_frame")
         self.buttons_frame = QtWidgets.QFrame(self.centralwidget)
-        self.buttons_frame.setStyleSheet("background-color: rgb(117, 117, 117);")
+        self.buttons_frame.setStyleSheet("background-color: rgb(117, 117, 117); border-top:none; border-bottom:none;")
         self.buttons_frame.setObjectName("buttons_frame")
+        self.buttons_frame.setMaximumHeight(60)
         # Layouts for components
         # editButtonsHL, headerVL, headerLayout
         self.headerVL = QtWidgets.QVBoxLayout(self.header_frame)
@@ -161,43 +70,45 @@ class Ui_MainWindow(object):
         # ===================== Header for headerVL
         self.headerLayout = QtWidgets.QHBoxLayout()
         self.headerLayout.setObjectName("headerLayout")
-        self.headerLayout.setSpacing(0)
+        self.headerLayout.setSpacing(5)
         self.headerLayout.setContentsMargins(0, 0, 0, 0)
         # ICON label
         self.icon_label = QtWidgets.QLabel(self.header_frame)
+        self.icon_label.setStyleSheet(style_button)
         self.icon_label.setPixmap(QPixmap(resource_path('resources/icons_svg/docV_icon.png')).scaled(35, 35, QtCore.Qt.KeepAspectRatio))
         self.icon_label.setMaximumHeight(30)
         self.icon_label.setMaximumWidth(45)
         self.icon_label.setContentsMargins(8,0,0,0)
         # FILE button
         self.file_btn = QtWidgets.QPushButton(self.header_frame)
-        self.file_btn.setContentsMargins(8,0,0,0)
+        self.file_btn.setContentsMargins(0,0,0,0)
         self.file_btn.setText("File")
         self.file_btn.setMaximumHeight(30)
         self.file_btn.setMaximumWidth(50)
         # SETTINGS button
         self.settings_btn = QtWidgets.QPushButton(self.header_frame)
-        self.settings_btn.setContentsMargins(8,0,0,0)
+        self.settings_btn.setContentsMargins(8,0,0,8)
         self.settings_btn.setText("Configurações")
         self.settings_btn.setMaximumHeight(30)
-        self.settings_btn.setMaximumWidth(50)
 
-        spacer = QtWidgets.QSpacerItem(10, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        right_spacer = QtWidgets.QSpacerItem(10, 10, QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Minimum)
+        spacer = QtWidgets.QSpacerItem(50, 35, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
         # CLOSE WINDOW button
         self.close_btn = QtWidgets.QPushButton(self.header_frame)
         self.close_btn.setIcon(QIcon(
             loadSvgIconColored(self.iconspath+'close-new.svg')))
         self.close_btn.setObjectName("close_btn")
-        self.close_btn.setStyleSheet(self.style_closeBTN)
+        # self.close_btn.setStyleSheet(style_closeBTN)
         self.close_btn.setMaximumHeight(30)
         self.close_btn.setMaximumWidth(45)
+        self.close_btn.setContentsMargins(0,0,10,0)
         #self.close_btn.setToolTip("Close Window")
         # MINIMIZE WINDOW button
         self.minimize_btn = QtWidgets.QPushButton(self.header_frame)
         self.minimize_btn.setIcon(QIcon(
             loadSvgIconColored(self.iconspath+'mini-new.svg')))
         self.minimize_btn.setObjectName("close_btn")
-        self.minimize_btn.setStyleSheet(self.style_m_M)
+        self.minimize_btn.setStyleSheet(style_m_M)
         self.minimize_btn.setMaximumHeight(30)
         self.minimize_btn.setMaximumWidth(45)
         #self.minimize_btn.setToolTip("Minimize Window")
@@ -206,20 +117,22 @@ class Ui_MainWindow(object):
         self.maxmize_btn.setIcon(QIcon(
             loadSvgIconColored(self.iconspath+'maxi-new.svg',color='#ffffff')))
         self.maxmize_btn.setObjectName("maxmize_btn")
-        self.maxmize_btn.setStyleSheet(self.style_m_M)
+        self.maxmize_btn.setStyleSheet(style_m_M)
         self.maxmize_btn.setMaximumHeight(30)
         self.maxmize_btn.setMaximumWidth(45)
         #self.maxmize_btn.setToolTip("Maxmize Window")
         # Adjusting size and alignment
-        self.file_btn.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed)
+        self.file_btn.setSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Fixed)
+        self.settings_btn.setSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Fixed)
         self.minimize_btn.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed)
         self.maxmize_btn.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed)
         self.close_btn.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed)
-        
+
         self.headerLayout.setAlignment(self.file_btn, QtCore.Qt.AlignLeft)
+        self.headerLayout.setAlignment(self.settings_btn, QtCore.Qt.AlignLeft)
         self.headerLayout.setAlignment(self.minimize_btn, QtCore.Qt.AlignRight)
         self.headerLayout.setAlignment(self.maxmize_btn, QtCore.Qt.AlignRight)
-        self.headerLayout.setAlignment(self.close_btn, QtCore.Qt.AlignRight) 
+        self.headerLayout.setAlignment(self.close_btn, QtCore.Qt.AlignRight)
         # adding widgets to layout
         self.headerLayout.addWidget(self.icon_label)
         self.headerLayout.addWidget(self.file_btn)
@@ -228,7 +141,8 @@ class Ui_MainWindow(object):
         self.headerLayout.addWidget(self.minimize_btn)
         self.headerLayout.addWidget(self.maxmize_btn)
         self.headerLayout.addWidget(self.close_btn)
-        
+        self.headerLayout.addItem(right_spacer)
+
         self.headerVL.addLayout(self.headerLayout)
         self.centralVL.addWidget(self.header_frame)
         MainWindow.title_bar = self.header_frame
@@ -244,7 +158,7 @@ class Ui_MainWindow(object):
         self.fontStyle_cb.setToolTip("Fonte do texto")
         self.fontStyle_cb.setMaximumWidth(130)
         self.fontStyle_cb.setMaximumHeight(30)
-        self.fontStyle_cb.setStyleSheet(self.style_utils)
+        self.fontStyle_cb.setStyleSheet(style_utils)
         self.fontStyle_cb.addItems(["Arial", "Courier New", "Times New Roman"])
         self.fontStyle_cb.currentIndexChanged.connect(self.update_font_style)
         
@@ -253,7 +167,7 @@ class Ui_MainWindow(object):
         
         # ================= Markdown Utilities ========================
         self.heading_btn = QtWidgets.QPushButton(self.buttons_frame)
-        self.heading_btn.setObjectName("heading_btn")
+        self.heading_btn.setObjectName(mark_btn_id)
         # self.heading_btn.setStyleSheet(self.style_button)
         self.heading_btn.setMinimumHeight(25)
         self.editButtonsHL.addWidget(self.heading_btn)
@@ -261,7 +175,7 @@ class Ui_MainWindow(object):
         self.heading_btn.setToolTip("Header text")
         
         self.bold_btn = QtWidgets.QPushButton(self.buttons_frame)
-        self.bold_btn.setObjectName("bold_btn")
+        self.bold_btn.setObjectName(mark_btn_id)
         self.bold_btn.setMinimumHeight(25)
         # self.bold_btn.setStyleSheet(self.style_button)
         self.bold_btn.setIcon(QIcon(loadSvgIcon(self.iconspath+'/bold.svg')))
@@ -269,7 +183,7 @@ class Ui_MainWindow(object):
         self.editButtonsHL.addWidget(self.bold_btn)
         
         self.italic_btn = QtWidgets.QPushButton(self.buttons_frame)
-        self.italic_btn.setObjectName("italic_btn")
+        self.italic_btn.setObjectName(mark_btn_id)
         # self.italic_btn.setStyleSheet(self.style_button)
         self.italic_btn.setMinimumHeight(25)
         self.italic_btn.setMinimumWidth(15)
@@ -278,15 +192,15 @@ class Ui_MainWindow(object):
         self.editButtonsHL.addWidget(self.italic_btn)
         
         self.quote_btn = QtWidgets.QPushButton(self.buttons_frame)
-        self.quote_btn.setObjectName("quote_btn")
-        # self.quote_btn.setStyleSheet(self.style_button)
+        self.quote_btn.setObjectName(mark_btn_id)
+        self.quote_btn.setStyleSheet("QPushButton{border-top: 1px solid black;border-bottom: 1px solid black;}QPushButton#mark-btn:hover{	border-top: 1px solid white;border-bottom: 1px solid white;}")
         self.quote_btn.setMinimumHeight(25)
         self.quote_btn.setIcon(QIcon(loadSvgIcon(self.iconspath+'/bxs-quote-right.svg')))
         self.quote_btn.setToolTip("Block Quote")
         self.editButtonsHL.addWidget(self.quote_btn)
         
         self.link_btn = QtWidgets.QPushButton(self.buttons_frame)
-        self.link_btn.setObjectName("link_btn")
+        self.link_btn.setObjectName(mark_btn_id)
         # self.link_btn.setStyleSheet(self.style_button)
         self.link_btn.setMinimumHeight(25)
         self.link_btn.setIcon(QIcon(loadSvgIcon(self.iconspath+'/bx-link.svg')))
@@ -294,7 +208,7 @@ class Ui_MainWindow(object):
         self.editButtonsHL.addWidget(self.link_btn)
         
         self.unList_btn = QtWidgets.QPushButton(self.buttons_frame)
-        self.unList_btn.setObjectName("unList_btn")
+        self.unList_btn.setObjectName(mark_btn_id)
         # self.unList_btn.setStyleSheet(self.style_button)
         self.unList_btn.setMinimumHeight(25)
         icon = QtGui.QIcon(resource_path('resources/icons_svg/menu.png'))
@@ -305,7 +219,7 @@ class Ui_MainWindow(object):
         self.editButtonsHL.addWidget(self.unList_btn)
 
         self.nList_btn = QtWidgets.QPushButton(self.buttons_frame)
-        self.nList_btn.setObjectName("nList_btn")
+        self.nList_btn.setObjectName(mark_btn_id)
         # self.nList_btn.setStyleSheet(self.style_button)
         self.nList_btn.setMinimumHeight(25)
         icon = QtGui.QIcon(resource_path('resources/icons_svg/number.png'))
@@ -317,7 +231,7 @@ class Ui_MainWindow(object):
         self.editButtonsHL.addWidget(self.nList_btn)
         
         self.taskList_btn = QtWidgets.QPushButton(self.buttons_frame)
-        self.taskList_btn.setObjectName("taskList_btn")
+        self.taskList_btn.setObjectName(mark_btn_id)
         # self.taskList_btn.setStyleSheet(self.style_button)
         self.taskList_btn.setMinimumHeight(25)
         icon = QtGui.QIcon(resource_path('resources/icons_svg/check_2.png'))
@@ -334,9 +248,11 @@ class Ui_MainWindow(object):
         # editArea is for a tab on tab_widget, added on call of function new_file() defined in main.py
         self.tab_widget = QtWidgets.QTabWidget()
         self.tab_widget.setTabsClosable(True)
+        self.tab_widget.setMinimumHeight(200)
+        self.tab_widget.setMaximumHeight(350)
         self.splitter = QSplitter(QtCore.Qt.Vertical)
         self.splitter.setObjectName("mainSplitter")
-        self.splitter.setStyleSheet(self.style_splitter)
+        self.splitter.setStyleSheet(style_splitter)
         self.editArea = QtWidgets.QTextEdit() #TextEditWithLineNumbers()
         # self.editArea.setStyleSheet("background-color: #DCDCDC; color: #000000;")
         # self.editArea.setObjectName("editArea")
@@ -349,6 +265,11 @@ class Ui_MainWindow(object):
         
         # self.previewArea = QWebEngineView()
         self.previewArea2 = QTextBrowser()
+        self.previewArea2.setMinimumHeight(150)
+        self.previewArea2.setMaximumHeight(350)
+        self.previewArea2.setStyleSheet(style_text_browse)
+        self.previewArea2.setObjectName("previewArea2")
+        self.previewArea2.setObjectName("previewArea2")
         # self.previewArea.setContentsMargins(5,5,5,5)
         # self.previewArea.setFocusPolicy(Qt.StrongFocus)
         # self.previewArea.setStyleSheet(self.style_preview)
@@ -380,54 +301,19 @@ class Ui_MainWindow(object):
         self.nList_btn.clicked.connect(self.addNList)
         self.taskList_btn.clicked.connect(self.addTaskList)
 
-    def statusBarMessage(self):
-        self.init_status_bar()
-    def init_status_bar(self):
-
-        # Adicionando um rótulo à barra de status
-        # self.status_label = QLabel("\t\t Bem Vindo(a)!!")
-        # self.status_label.setStyleSheet("color: black;")
-        # self.statusbar.addWidget(self.status_label)  # Use addWidget para garantir visibilidade
-
-        # Personalizando a barra de status com estilo
-        self.statusbar.setStyleSheet("""
-            QStatusBar {{
-                background-color: #2b2b2b;
-                color: black;
-                font-size: 12px;
-            }}
-            QLabel {{
-                font-weight: bold;
-                color: black;
-            }}
-            QProgressBar {{
-                border: 1px solid #3a3f44;
-                background-color: #1c1c1c;
-                color: #d4d4d4;
-                text-align: center;
-            }}
-            QPushButton {{
-                border: 1px solid #5a5a5a;
-                padding: 3px;
-                border-radius: 3px;
-            }}
-            QPushButton:hover {{
-                background-color: #4a4a4a;
-            }}
-        """)
     
-    def scroll_to_bottom(self, ok):
-        """
-        Executa JavaScript para scrollar a página para o final.
-
-        Args:
-            ok (bool): True se o carregamento foi bem-sucedido, False caso contrário.
-        """
-        if ok:
-            javascript_code = "window.scrollTo(0, document.body.scrollHeight);"
-            self.previewArea.page().runJavaScript(javascript_code)
-        else:
-            print("Erro ao carregar a página.")
+    # def scroll_to_bottom(self, ok):
+    #     """
+    #     Executa JavaScript para scrollar a página para o final.
+    #
+    #     Args:
+    #         ok (bool): True se o carregamento foi bem-sucedido, False caso contrário.
+    #     """
+    #     if ok:
+    #         javascript_code = "window.scrollTo(0, document.body.scrollHeight);"
+    #         self.previewArea.page().runJavaScript(javascript_code)
+    #     else:
+    #         print("Erro ao carregar a página.")
     
     #================ Dinamicidade UI
     def swapWidgetOnSplitter(self):

@@ -7,8 +7,7 @@ import markdown
 class EditActionsMixin:
 
     def init_ui(self):
-        self.ui.statusBarMessage()
-        self.ui.menu = self.create_menu()
+        self.ui.menu = self.create_file_menu()
         # self.ui.splitter.setStyleSheet("QSplitter::handle {background-color:#dfe2e5; height: 30px;}")
         self.ui.editArea.setFocus()
         # self.ui.previewArea.setZoomFactor(0.8)
@@ -17,12 +16,12 @@ class EditActionsMixin:
         self.setWindowTitle('DocViewer')
         self.ui.file_btn.clicked.connect(self.show_menu)
         self.ui.tab_widget.tabCloseRequested.connect(self.close_tab)
-        self.ui.tab_widget.currentChanged.connect(self.onTabChange)
+        # self.ui.tab_widget.currentChanged.connect(self.onTabChange)
         self.ui.tab_widget.tabBar().setContextMenuPolicy(Qt.CustomContextMenu)
         self.ui.tab_widget.tabBar().customContextMenuRequested.connect(self.onTabRightClick)
         self.new_file()
 
-    def create_menu(self):
+    def create_file_menu(self):
         menu = QMenu()
         new_file_act = QAction("Novo arquivo", self)
         new_file_act.setShortcut("Ctrl+N")
@@ -77,13 +76,13 @@ class EditActionsMixin:
             # Exibe o menu de contexto na posição do cursor
             menu.exec_(self.ui.tab_widget.tabBar().mapToGlobal(position))
     # ... incluir updatePreview, inteliComplete, updateCompleteHtml, getMarkdownText, scroll_to_bottom etc
-    # def eventFilter(self, obj, event):
-    #     if obj == self.ui.editArea and event.type() == QtCore.QEvent.KeyRelease and event.key() == QtCore.Qt.Key_Return:
-    #         self.inteliComplete()
-    #     return super().eventFilter(obj, event)
+    def eventFilter(self, obj, event):
+        if obj == self.actual_text_edit and event.type() == QtCore.QEvent.KeyRelease and event.key() == QtCore.Qt.Key_Return:
+            self.inteliComplete()
+        return super().eventFilter(obj, event)
     
     def inteliComplete(self):
-        cursor = self.ui.editArea.textCursor()
+        cursor = self.actual_text_edit.textCursor()
         cursor.movePosition(QtGui.QTextCursor.EndOfLine)  # Move o cursor para o final da linha atual
         
         actual_line = cursor.block().text().strip()
@@ -110,7 +109,7 @@ class EditActionsMixin:
             cursor.insertText("- [ ] ")
         
         ##cursor.movePosition(QtGui.QTextCursor.StartOfLine, QtGui.QTextCursor.MoveAnchor)
-        self.ui.editArea.setTextCursor(cursor) 
+        self.actual_text_edit.setTextCursor(cursor)
     
     def getMarkdownText(self, input_text):
         mkd_text = markdown.markdown(input_text, extensions=['extra', 'tables','fenced_code', 'codehilite'])
