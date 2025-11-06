@@ -1,4 +1,4 @@
-pyinstaller --noconsole --name DocViewer --onefile \
+pyinstaller --noconsole --name DocViewer \
   --icon="resources/icons_svg/favicon.ico" \
   --add-data "MarkViewDesktop/ui/dark-high-v0.qss:ui" \
   --add-data "MarkViewDesktop/resources/icons_svg/*:resources/icons_svg" \

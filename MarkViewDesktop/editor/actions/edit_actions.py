@@ -1,22 +1,37 @@
-from PySide6.QtWidgets import QMessageBox, QMenu, QInputDialog, QTextEdit, QWidget, QVBoxLayout
-from PySide6.QtCore import Qt 
-from PySide6.QtGui import QAction
-from PySide6 import QtGui
 import markdown
+from PySide6 import QtGui, QtCore
+from PySide6.QtCore import Qt
+from PySide6.QtGui import QAction, QTextCursor
+from PySide6.QtWidgets import QMenu
+
 
 class EditActionsMixin:
+
+    def __init__(self):
+        self.has_open_menu = False
 
     def init_ui(self):
         self.ui.menu = self.create_file_menu()
         # self.ui.splitter.setStyleSheet("QSplitter::handle {background-color:#dfe2e5; height: 30px;}")
         self.ui.editArea.setFocus()
         # self.ui.previewArea.setZoomFactor(0.8)
-
         self.setGeometry(100, 100, 800, 600)
         self.setWindowTitle('DocViewer')
+
+        self.ui.heading_btn.clicked.connect(self.addHeader)
+        self.ui.bold_btn.clicked.connect(self.addBold)
+        self.ui.italic_btn.clicked.connect(self.addItalic)
+        self.ui.quote_btn.clicked.connect(self.addQuote)
+        self.ui.link_btn.clicked.connect(self.addLink)
+        self.ui.unList_btn.clicked.connect(self.addUnList)
+        self.ui.nList_btn.clicked.connect(self.addNList)
+        self.ui.taskList_btn.clicked.connect(self.addTaskList)
+        self.ui.fontStyle_cb.currentIndexChanged.connect(self.update_font_style)
+        self.ui.fontSize_sp.valueChanged.connect(self.update_font_size)
+        # self.ui.menu.aboutToHide.connect(self.menu_closed)
         self.ui.file_btn.clicked.connect(self.show_menu)
         self.ui.tab_widget.tabCloseRequested.connect(self.close_tab)
-        # self.ui.tab_widget.currentChanged.connect(self.onTabChange)
+        self.ui.tab_widget.currentChanged.connect(self.onTabChange)
         self.ui.tab_widget.tabBar().setContextMenuPolicy(Qt.CustomContextMenu)
         self.ui.tab_widget.tabBar().customContextMenuRequested.connect(self.onTabRightClick)
         self.new_file()
@@ -41,13 +56,34 @@ class EditActionsMixin:
         # menu.setFixedWidth(180)
         return menu
 
+    def create_settings_menu(self):
+        pass
+
     def show_menu(self):
-        if not self.ui.has_open_menu:
-            self.ui.menu.exec(self.ui.file_btn.mapToGlobal(self.ui.file_btn.rect().bottomLeft()))
-            self.ui.has_open_menu = True
-        else:
-            self.ui.menu.close()
-            self.ui.has_open_menu = False
+        print(self.has_open_menu)
+        self.ui.menu.exec(self.ui.file_btn.mapToGlobal(self.ui.file_btn.rect().bottomLeft()))
+        # if not self.has_open_menu:
+        #     self.has_open_menu = True
+        # else:
+        #     self.ui.has_open_menu = False
+        #     self.ui.menu.close()
+
+    def menu_closed(self):
+        """
+        Slot chamado quando o menu está prestes a ser escondido,
+        seja por clique em uma ação ou clique fora.
+        """
+        print("CHamou o closed")
+        if self.has_open_menu:
+            self.has_open_menu = False
+        print(self.has_open_menu)
+
+    def onTabChange(self, index):
+        self.ui.editArea = self.getCurrentTextEdit(index)
+        if self.ui.editArea is not None:
+            self.updateAfterTabChange(self.ui.editArea)
+            self.ui.editArea.installEventFilter(self)
+        #print(f"Aba mudada: {index}")
 
     def onTabRightClick(self, position):
         """Exibe um diálogo para renomear arquivo ao clicar com o botão direito em cima da aba"""
@@ -75,7 +111,7 @@ class EditActionsMixin:
 
             # Exibe o menu de contexto na posição do cursor
             menu.exec_(self.ui.tab_widget.tabBar().mapToGlobal(position))
-    # ... incluir updatePreview, inteliComplete, updateCompleteHtml, getMarkdownText, scroll_to_bottom etc
+
     def eventFilter(self, obj, event):
         if obj == self.actual_text_edit and event.type() == QtCore.QEvent.KeyRelease and event.key() == QtCore.Qt.Key_Return:
             self.inteliComplete()
@@ -123,7 +159,7 @@ class EditActionsMixin:
         self.verifyChangesAndSetTabName()
         
         self.html_text_ = self.getMarkdownText(markdown_text)
-        print(self.html_text_)
+        # print(self.html_text_)
         self.updateCompleteHtml()
         self.ui.previewArea2.setHtml(self.complete_html)
         ### TODO: Permitir ativar e desativar esta funcionalidade
@@ -280,3 +316,118 @@ class EditActionsMixin:
                 file_name = file_path.split('/')[-1]  # Pega o último componente do caminho
                 self.ui.tab_widget.setTabText(current_index, f"{file_name}*")
                 self.ui.open_files[current_tab][1] = True
+
+    # ================Funções para os botoes de auxilio do Markdown
+    def update_font_size(self):
+        font = self.ui.editArea.font()
+        font.setPointSize(self.ui.fontSize_sp.value())
+        self.ui.editArea.setFont(font)
+
+    def update_font_style(self):
+        font = self.ui.editArea.font()
+        font.setFamily(self.ui.fontStyle_cb.currentText())
+        self.ui.editArea.setFont(font)
+
+    def addHeader(self):
+        cursor = self.ui.editArea.textCursor()
+        selected_text = cursor.selectedText()
+        if selected_text:
+            cursor.insertText(f"# {selected_text}")
+            self.ui.editArea.setFocus()
+        else:
+            current_line = cursor.block().text().strip()
+            if current_line.startswith("#"):
+                new_line = current_line.replace("#", "## ", 1)
+                cursor.select(QTextCursor.BlockUnderCursor)
+                cursor.removeSelectedText()
+                cursor.insertText(new_line)
+                cursor.movePosition(QtGui.QTextCursor.Right, QtGui.QTextCursor.MoveAnchor, 1)
+                self.ui.editArea.setTextCursor(cursor)
+                self.ui.editArea.setFocus()
+            else:
+                cursor.insertText("# ")
+                cursor.movePosition(QtGui.QTextCursor.Right, QtGui.QTextCursor.MoveAnchor, 1)
+                self.ui.editArea.setTextCursor(cursor)
+                self.ui.editArea.setFocus()
+
+    def addBold(self):
+        cursor = self.ui.editArea.textCursor()
+        selected_text = cursor.selectedText()
+        if selected_text:
+            cursor.insertText(f"**{selected_text}**")
+            self.ui.editArea.setFocus()
+        else:
+            cursor.insertText("**")
+            cursor.movePosition(QtGui.QTextCursor.Left, QtGui.QTextCursor.MoveAnchor, 2)
+            cursor.insertText("**")
+            self.ui.editArea.setTextCursor(cursor)
+            self.ui.editArea.setFocus()
+
+    def addItalic(self):
+        cursor = self.ui.editArea.textCursor()
+        selected_text = cursor.selectedText()
+        if selected_text:
+            cursor.insertText(f"_{selected_text}_")
+            self.ui.editArea.setFocus()
+        else:
+            cursor.insertText("_")
+            cursor.movePosition(QtGui.QTextCursor.Left, QtGui.QTextCursor.MoveAnchor, 1)
+            cursor.insertText("_")
+            self.ui.editArea.setTextCursor(cursor)
+            self.ui.editArea.setFocus()
+
+    def addLink(self):
+        cursor = self.ui.editArea.textCursor()
+        selected_text = cursor.selectedText()
+        if selected_text:
+            cursor.insertText(f"[{selected_text}](url)")
+            self.ui.editArea.setFocus()
+        else:
+            cursor.insertText("[nome_link](url) ")
+            cursor.movePosition(QtGui.QTextCursor.Left, QtGui.QTextCursor.MoveAnchor, 7)
+            self.ui.editArea.setTextCursor(cursor)
+            self.ui.editArea.setFocus()
+
+    def addQuote(self):
+        cursor = self.ui.editArea.textCursor()
+        selected_text = cursor.selectedText()
+        if selected_text:
+            cursor.insertText(f"> {selected_text}")
+            self.ui.editArea.setFocus()
+        else:
+            cursor.insertText(">")
+            self.ui.editArea.setTextCursor(cursor)
+            self.ui.editArea.setFocus()
+
+    def addUnList(self):
+        cursor = self.ui.editArea.textCursor()
+        selected_text = cursor.selectedText()
+        if selected_text:
+            cursor.insertText(f"- {selected_text}")
+            self.ui.editArea.setFocus()
+        else:
+            cursor.insertText("- ")
+            self.ui.editArea.setTextCursor(cursor)
+            self.ui.editArea.setFocus()
+
+    def addNList(self):
+        cursor = self.ui.editArea.textCursor()
+        selected_text = cursor.selectedText()
+        if selected_text:
+            cursor.insertText(f"1. {selected_text}")
+            self.ui.editArea.setFocus()
+        else:
+            cursor.insertText("1.")
+            self.ui.editArea.setTextCursor(cursor)
+            self.ui.editArea.setFocus()
+
+    def addTaskList(self):
+        cursor = self.ui.editArea.textCursor()
+        selected_text = cursor.selectedText()
+        if selected_text:
+            cursor.insertText(f"- [ ] {selected_text}")
+            self.ui.editArea.setFocus()
+        else:
+            cursor.insertText("- [ ] ")
+            self.ui.editArea.setTextCursor(cursor)
+            self.ui.editArea.setFocus()

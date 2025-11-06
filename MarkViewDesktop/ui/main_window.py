@@ -15,9 +15,9 @@ class MainWindow(QMainWindow):
         super().__init__()
 
         self.setWindowFlags(Qt.FramelessWindowHint)
-        self.setAttribute(Qt.WA_TranslucentBackground)
+        # self.setAttribute(Qt.WA_TranslucentBackground)
         self.setGeometry(100, 100, 600, 450)
-        self.border_size = 5
+        self.border_size = 6
 
         self.installEventFilter(self)
 

@@ -1,13 +1,10 @@
-import sys
 import os
+import sys
 from PySide6 import QtCore, QtGui, QtWidgets
-from PySide6.QtCore import Qt
+from PySide6.QtGui import QIcon, QFont, QTextCursor
 from PySide6.QtWidgets import QSplitter, QSpinBox, QComboBox, QTextBrowser
-from PySide6.QtGui import QIcon, QPixmap, QPainter, QFont, QTextCursor
-from PySide6.QtSvg import QSvgRenderer
-# from PySide6.QtWebEngineWidgets import QWebEngineView
-
 from ui.ui_utils import *
+# from PySide6.QtWebEngineWidgets import QWebEngineView
 
 def resource_path(relative_path: str) -> str:
     """Obtém o caminho absoluto do recurso, funciona no dev e no executável."""
@@ -34,7 +31,6 @@ class Ui_MainWindow(object):
         self.new_file_count = 0
         self.open_files = {}
         self.menu = None
-        self.has_open_menu = False
         self.act_op_file = None
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(539, 307)
@@ -49,13 +45,15 @@ class Ui_MainWindow(object):
         # Frames for layouts
         # header_frame, buttons_frame
         self.header_frame = QtWidgets.QFrame(self.centralwidget)
+        self.header_frame.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed)
         # self.header_frame.setStyleSheet(self.style_button)
-        self.header_frame.setMinimumHeight(50)
+        # self.header_frame.setMinimumHeight(50)
         # self.header_frame.setObjectName("header_frame")
         self.buttons_frame = QtWidgets.QFrame(self.centralwidget)
-        self.buttons_frame.setStyleSheet("background-color: rgb(117, 117, 117); border-top:none; border-bottom:none;")
+        self.buttons_frame.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed)
+        self.buttons_frame.setStyleSheet("border-top:none; border-bottom:none;")
         self.buttons_frame.setObjectName("buttons_frame")
-        self.buttons_frame.setMaximumHeight(60)
+        # self.buttons_frame.setMaximumHeight(50)
         # Layouts for components
         # editButtonsHL, headerVL, headerLayout
         self.headerVL = QtWidgets.QVBoxLayout(self.header_frame)
@@ -86,10 +84,10 @@ class Ui_MainWindow(object):
         self.file_btn.setMaximumHeight(30)
         self.file_btn.setMaximumWidth(50)
         # SETTINGS button
-        self.settings_btn = QtWidgets.QPushButton(self.header_frame)
-        self.settings_btn.setContentsMargins(8,0,0,8)
-        self.settings_btn.setText("Configurações")
-        self.settings_btn.setMaximumHeight(30)
+        # self.settings_btn = QtWidgets.QPushButton(self.header_frame)
+        # self.settings_btn.setContentsMargins(8,0,0,8)
+        # self.settings_btn.setText("Configurações")
+        # self.settings_btn.setMaximumHeight(30)
 
         right_spacer = QtWidgets.QSpacerItem(10, 10, QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Minimum)
         spacer = QtWidgets.QSpacerItem(50, 35, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
@@ -98,6 +96,7 @@ class Ui_MainWindow(object):
         self.close_btn.setIcon(QIcon(
             loadSvgIconColored(self.iconspath+'close-new.svg')))
         self.close_btn.setObjectName("close_btn")
+        self.close_btn.setStyleSheet(style_closeBTN)
         # self.close_btn.setStyleSheet(style_closeBTN)
         self.close_btn.setMaximumHeight(30)
         self.close_btn.setMaximumWidth(45)
@@ -121,22 +120,22 @@ class Ui_MainWindow(object):
         self.maxmize_btn.setMaximumHeight(30)
         self.maxmize_btn.setMaximumWidth(45)
         #self.maxmize_btn.setToolTip("Maxmize Window")
-        # Adjusting size and alignment
-        self.file_btn.setSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Fixed)
-        self.settings_btn.setSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Fixed)
+        self.file_btn.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed)
+        # self.settings_btn.setSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Fixed)
         self.minimize_btn.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed)
         self.maxmize_btn.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed)
         self.close_btn.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed)
+        # self.header_frame.setSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Fixed)
 
         self.headerLayout.setAlignment(self.file_btn, QtCore.Qt.AlignLeft)
-        self.headerLayout.setAlignment(self.settings_btn, QtCore.Qt.AlignLeft)
+        # self.headerLayout.setAlignment(self.settings_btn, QtCore.Qt.AlignLeft)
         self.headerLayout.setAlignment(self.minimize_btn, QtCore.Qt.AlignRight)
         self.headerLayout.setAlignment(self.maxmize_btn, QtCore.Qt.AlignRight)
         self.headerLayout.setAlignment(self.close_btn, QtCore.Qt.AlignRight)
         # adding widgets to layout
         self.headerLayout.addWidget(self.icon_label)
         self.headerLayout.addWidget(self.file_btn)
-        self.headerLayout.addWidget(self.settings_btn)
+        # self.headerLayout.addWidget(self.settings_btn)
         self.headerLayout.addItem(spacer)
         self.headerLayout.addWidget(self.minimize_btn)
         self.headerLayout.addWidget(self.maxmize_btn)
@@ -148,11 +147,11 @@ class Ui_MainWindow(object):
         MainWindow.title_bar = self.header_frame
         # ================= Fonte style and Size ===================
         self.fontSize_sp = QSpinBox(self.buttons_frame)
-        # self.fontSize_sp.setStyleSheet(self.style_utils)
+        self.fontSize_sp.setStyleSheet(style_spin_box)
         self.fontSize_sp.setToolTip("Tamanho do texto")
         self.fontSize_sp.setRange(8, 72)  # Define o intervalo do tamanho da fonte
         self.fontSize_sp.setValue(16)  # Define o valor padrão
-        self.fontSize_sp.valueChanged.connect(self.update_font_size)  # Conecta a mudança de valor ao método
+        # self.fontSize_sp.valueChanged.connect(self.update_font_size)  # Conecta a mudança de valor ao método
 
         self.fontStyle_cb = QComboBox(self.buttons_frame)
         self.fontStyle_cb.setToolTip("Fonte do texto")
@@ -160,7 +159,7 @@ class Ui_MainWindow(object):
         self.fontStyle_cb.setMaximumHeight(30)
         self.fontStyle_cb.setStyleSheet(style_utils)
         self.fontStyle_cb.addItems(["Arial", "Courier New", "Times New Roman"])
-        self.fontStyle_cb.currentIndexChanged.connect(self.update_font_style)
+        # self.fontStyle_cb.currentIndexChanged.connect(self.update_font_style)
         
         self.editButtonsHL.addWidget(self.fontStyle_cb)
         self.editButtonsHL.addWidget(self.fontSize_sp)
@@ -168,76 +167,69 @@ class Ui_MainWindow(object):
         # ================= Markdown Utilities ========================
         self.heading_btn = QtWidgets.QPushButton(self.buttons_frame)
         self.heading_btn.setObjectName(mark_btn_id)
-        # self.heading_btn.setStyleSheet(self.style_button)
+        self.heading_btn.setStyleSheet(style_button2)
         self.heading_btn.setMinimumHeight(25)
         self.editButtonsHL.addWidget(self.heading_btn)
-        self.heading_btn.setIcon(QIcon(loadSvgIcon(self.iconspath+'/bx-heading.svg')))
+        self.heading_btn.setIcon(loadSvgIconColored(self.iconspath+'/bx-heading.svg'))
         self.heading_btn.setToolTip("Header text")
         
         self.bold_btn = QtWidgets.QPushButton(self.buttons_frame)
         self.bold_btn.setObjectName(mark_btn_id)
         self.bold_btn.setMinimumHeight(25)
-        # self.bold_btn.setStyleSheet(self.style_button)
-        self.bold_btn.setIcon(QIcon(loadSvgIcon(self.iconspath+'/bold.svg')))
+        self.bold_btn.setStyleSheet(style_button2)
+        self.bold_btn.setIcon(loadSvgIconColored(self.iconspath+'/bold.svg'))
         self.bold_btn.setToolTip("Bold text")
         self.editButtonsHL.addWidget(self.bold_btn)
         
         self.italic_btn = QtWidgets.QPushButton(self.buttons_frame)
         self.italic_btn.setObjectName(mark_btn_id)
-        # self.italic_btn.setStyleSheet(self.style_button)
+        self.italic_btn.setStyleSheet(style_button2)
         self.italic_btn.setMinimumHeight(25)
         self.italic_btn.setMinimumWidth(15)
-        self.italic_btn.setIcon(QIcon(loadSvgIcon(self.iconspath+'/bx-italic.svg')))
+        self.italic_btn.setIcon(loadSvgIconColored('resources/icons_svg/bx-italic.svg'))
         self.italic_btn.setToolTip("Italic Text")
         self.editButtonsHL.addWidget(self.italic_btn)
         
         self.quote_btn = QtWidgets.QPushButton(self.buttons_frame)
         self.quote_btn.setObjectName(mark_btn_id)
-        self.quote_btn.setStyleSheet("QPushButton{border-top: 1px solid black;border-bottom: 1px solid black;}QPushButton#mark-btn:hover{	border-top: 1px solid white;border-bottom: 1px solid white;}")
+        self.quote_btn.setStyleSheet(style_button2)
         self.quote_btn.setMinimumHeight(25)
-        self.quote_btn.setIcon(QIcon(loadSvgIcon(self.iconspath+'/bxs-quote-right.svg')))
+        self.quote_btn.setIcon(loadSvgIconColored('resources/icons_svg/bxs-quote-right.svg'))
         self.quote_btn.setToolTip("Block Quote")
         self.editButtonsHL.addWidget(self.quote_btn)
         
         self.link_btn = QtWidgets.QPushButton(self.buttons_frame)
         self.link_btn.setObjectName(mark_btn_id)
-        # self.link_btn.setStyleSheet(self.style_button)
+        self.link_btn.setStyleSheet(style_button2)
         self.link_btn.setMinimumHeight(25)
-        self.link_btn.setIcon(QIcon(loadSvgIcon(self.iconspath+'/bx-link.svg')))
+        self.link_btn.setIcon(loadSvgIconColored(self.iconspath+'/bx-link.svg'))
         self.link_btn.setToolTip("refer a link")
         self.editButtonsHL.addWidget(self.link_btn)
         
         self.unList_btn = QtWidgets.QPushButton(self.buttons_frame)
         self.unList_btn.setObjectName(mark_btn_id)
-        # self.unList_btn.setStyleSheet(self.style_button)
+        self.unList_btn.setStyleSheet(style_button2)
         self.unList_btn.setMinimumHeight(25)
-        icon = QtGui.QIcon(resource_path('resources/icons_svg/menu.png'))
-        pixmap = icon.pixmap(QtCore.QSize(100, 100))
-        pixmap = pixmap.scaled(128, 128, QtCore.Qt.KeepAspectRatio, QtCore.Qt.SmoothTransformation) # Redimensiona a imagem
-        self.unList_btn.setIcon(QtGui.QIcon(pixmap))
+
+
+        self.unList_btn.setIcon(loadSvgIconColored(self.iconspath+'/menu.svg'))
         self.unList_btn.setToolTip("Unordered List")
         self.editButtonsHL.addWidget(self.unList_btn)
 
         self.nList_btn = QtWidgets.QPushButton(self.buttons_frame)
         self.nList_btn.setObjectName(mark_btn_id)
-        # self.nList_btn.setStyleSheet(self.style_button)
+        self.nList_btn.setStyleSheet(style_button2)
         self.nList_btn.setMinimumHeight(25)
-        icon = QtGui.QIcon(resource_path('resources/icons_svg/number.png'))
-        pixmap = icon.pixmap(QtCore.QSize(100, 100))
-        pixmap = pixmap.scaled(128, 128, QtCore.Qt.KeepAspectRatio, QtCore.Qt.SmoothTransformation) # Redimensiona a imagem
-        self.nList_btn.setIcon(QtGui.QIcon(pixmap))
+        self.nList_btn.setIcon(loadSvgIconColored(self.iconspath+'/numbered-list.svg'))
         self.nList_btn.setText("")
         self.nList_btn.setToolTip("Numbered List")
         self.editButtonsHL.addWidget(self.nList_btn)
         
         self.taskList_btn = QtWidgets.QPushButton(self.buttons_frame)
         self.taskList_btn.setObjectName(mark_btn_id)
-        # self.taskList_btn.setStyleSheet(self.style_button)
+        self.taskList_btn.setStyleSheet(style_button2)
         self.taskList_btn.setMinimumHeight(25)
-        icon = QtGui.QIcon(resource_path('resources/icons_svg/check_2.png'))
-        pixmap = icon.pixmap(QtCore.QSize(100, 100))
-        pixmap = pixmap.scaled(128, 128, QtCore.Qt.KeepAspectRatio, QtCore.Qt.SmoothTransformation)
-        self.taskList_btn.setIcon(QtGui.QIcon(pixmap))
+        self.taskList_btn.setIcon(loadSvgIconColored('resources/icons_svg/bxs-check.svg'))
         self.taskList_btn.setToolTip("Task List")
         self.editButtonsHL.addWidget(self.taskList_btn)
         
@@ -249,8 +241,9 @@ class Ui_MainWindow(object):
         self.tab_widget = QtWidgets.QTabWidget()
         self.tab_widget.setTabsClosable(True)
         self.tab_widget.setMinimumHeight(200)
-        self.tab_widget.setMaximumHeight(350)
+        # self.tab_widget.setMaximumHeight(400)
         self.splitter = QSplitter(QtCore.Qt.Vertical)
+        # self.splitter.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
         self.splitter.setObjectName("mainSplitter")
         self.splitter.setStyleSheet(style_splitter)
         self.editArea = QtWidgets.QTextEdit() #TextEditWithLineNumbers()
@@ -259,17 +252,14 @@ class Ui_MainWindow(object):
         font = QFont()
         font.setPointSize(16)
         self.splitter.addWidget(self.tab_widget)
-
         #========================================= adding splitter to centralVL
         self.centralVL.addWidget(self.splitter)
         
         # self.previewArea = QWebEngineView()
         self.previewArea2 = QTextBrowser()
         self.previewArea2.setMinimumHeight(150)
-        self.previewArea2.setMaximumHeight(350)
+        # self.previewArea2.setMaximumHeight(400)
         self.previewArea2.setStyleSheet(style_text_browse)
-        self.previewArea2.setObjectName("previewArea2")
-        self.previewArea2.setObjectName("previewArea2")
         # self.previewArea.setContentsMargins(5,5,5,5)
         # self.previewArea.setFocusPolicy(Qt.StrongFocus)
         # self.previewArea.setStyleSheet(self.style_preview)
@@ -283,23 +273,14 @@ class Ui_MainWindow(object):
         MainWindow.setCentralWidget(self.centralwidget)
         MainWindow.content_widget = self.splitter
 
-        self.statusbar = QtWidgets.QStatusBar(MainWindow)
-        self.statusbar.setObjectName("statusbar")
-        # self.statusbar.setStyleSheet("background-color: #dfe2e5;")
-        MainWindow.setStatusBar(self.statusbar)
+        # self.statusbar = QtWidgets.QStatusBar(MainWindow)
+        # self.statusbar.setObjectName("statusbar")
+        # # self.statusbar.setStyleSheet("background-color: #dfe2e5;")
+        # MainWindow.setStatusBar(self.statusbar)
         
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
-        
-        # Conecta ações auxilio markdown aos  respectivos botoes
-        self.heading_btn.clicked.connect(self.addHeader)
-        self.bold_btn.clicked.connect(self.addBold)
-        self.italic_btn.clicked.connect(self.addItalic)
-        self.quote_btn.clicked.connect(self.addQuote)
-        self.link_btn.clicked.connect(self.addLink)
-        self.unList_btn.clicked.connect(self.addUnList)
-        self.nList_btn.clicked.connect(self.addNList)
-        self.taskList_btn.clicked.connect(self.addTaskList)
+
 
     
     # def scroll_to_bottom(self, ok):
@@ -342,122 +323,8 @@ class Ui_MainWindow(object):
                 self.splitter.setOrientation(QtCore.Qt.Vertical)
             else:
                 self.splitter.setOrientation(QtCore.Qt.Horizontal)
-                self.splitter.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
+                # self.splitter.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
 
-    #================Funções para os botoes de auxilio do Markdown
-    def update_font_size(self):
-        font = self.editArea.font()
-        font.setPointSize(self.fontSize_sp.value())
-        self.editArea.setFont(font)
-
-    def update_font_style(self):
-        font = self.editArea.font()
-        font.setFamily(self.fontStyle_cb.currentText())
-        self.editArea.setFont(font)
-        
-    def addHeader(self):
-        cursor = self.editArea.textCursor()
-        selected_text = cursor.selectedText()
-        if selected_text:
-            cursor.insertText(f"# {selected_text}")
-            self.editArea.setFocus()
-        else:
-            current_line = cursor.block().text().strip()
-            if current_line.startswith("#"):
-                new_line = current_line.replace("#", "## ",1)
-                cursor.select(QTextCursor.BlockUnderCursor)
-                cursor.removeSelectedText()
-                cursor.insertText(new_line)
-                cursor.movePosition(QtGui.QTextCursor.Right, QtGui.QTextCursor.MoveAnchor, 1)
-                self.editArea.setTextCursor(cursor)
-                self.editArea.setFocus()                
-            else:
-                cursor.insertText("# ")
-                cursor.movePosition(QtGui.QTextCursor.Right, QtGui.QTextCursor.MoveAnchor, 1)
-                self.editArea.setTextCursor(cursor)
-                self.editArea.setFocus()
-    
-    def addBold(self):
-        cursor = self.editArea.textCursor()
-        selected_text = cursor.selectedText()
-        if selected_text:
-            cursor.insertText(f"**{selected_text}**")
-            self.editArea.setFocus()
-        else:
-            cursor.insertText("**")
-            cursor.movePosition(QtGui.QTextCursor.Left, QtGui.QTextCursor.MoveAnchor, 2)
-            cursor.insertText("**")
-            self.editArea.setTextCursor(cursor)
-            self.editArea.setFocus()
-    
-    def addItalic(self):
-        cursor = self.editArea.textCursor()
-        selected_text = cursor.selectedText()
-        if selected_text:
-            cursor.insertText(f"_{selected_text}_")
-            self.editArea.setFocus()
-        else:
-            cursor.insertText("_")
-            cursor.movePosition(QtGui.QTextCursor.Left, QtGui.QTextCursor.MoveAnchor, 1)
-            cursor.insertText("_")
-            self.editArea.setTextCursor(cursor)
-            self.editArea.setFocus()
-        
-    def addLink(self):
-        cursor = self.editArea.textCursor()
-        selected_text = cursor.selectedText()
-        if selected_text:
-            cursor.insertText(f"[{selected_text}](url)")
-            self.editArea.setFocus()
-        else:
-            cursor.insertText("[nome_link](url) ")
-            cursor.movePosition(QtGui.QTextCursor.Left, QtGui.QTextCursor.MoveAnchor, 7)
-            self.editArea.setTextCursor(cursor)
-            self.editArea.setFocus()    
-    
-    def addQuote(self):
-        cursor = self.editArea.textCursor()
-        selected_text = cursor.selectedText()
-        if selected_text:
-            cursor.insertText(f"> {selected_text}")
-            self.editArea.setFocus()
-        else:
-            cursor.insertText(">")
-            self.editArea.setTextCursor(cursor)
-            self.editArea.setFocus()    
-    
-    def addUnList(self):
-        cursor = self.editArea.textCursor()
-        selected_text = cursor.selectedText()
-        if selected_text:
-            cursor.insertText(f"- {selected_text}")
-            self.editArea.setFocus()
-        else:
-            cursor.insertText("- ")
-            self.editArea.setTextCursor(cursor)
-            self.editArea.setFocus()    
-    
-    def addNList(self):
-        cursor = self.editArea.textCursor()
-        selected_text = cursor.selectedText()
-        if selected_text:
-            cursor.insertText(f"1. {selected_text}")
-            self.editArea.setFocus()
-        else:
-            cursor.insertText("1.")
-            self.editArea.setTextCursor(cursor)
-            self.editArea.setFocus()    
-    
-    def addTaskList(self):
-        cursor = self.editArea.textCursor()
-        selected_text = cursor.selectedText()
-        if selected_text:
-            cursor.insertText(f"- [ ] {selected_text}")
-            self.editArea.setFocus()
-        else:
-            cursor.insertText("- [ ] ")
-            self.editArea.setTextCursor(cursor)
-            self.editArea.setFocus()
 
     #================ Função que traduz a UI
     def retranslateUi(self, MainWindow):

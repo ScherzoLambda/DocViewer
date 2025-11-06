@@ -1,5 +1,5 @@
 from PySide6 import QtGui
-from PySide6.QtCore import Qt, QEvent
+from PySide6.QtCore import Qt, QEvent, QFileSystemWatcher
 from PySide6.QtGui import QIcon, QTextCursor
 from PySide6.QtWidgets import QTextEdit
 
@@ -15,7 +15,16 @@ class MarkdownEditor(MainWindow, EditActionsMixin, FileActionsMixin):
         super().__init__()
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
+        self.current_file_path = ""  # O caminho do arquivo que você abriu
 
+        # 1. Inicializa o File System Watcher
+        self.file_watcher = QFileSystemWatcher(self)
+
+        # 2. Adiciona o arquivo para monitorar
+        self.file_watcher.addPath(self.current_file_path)
+
+        # 3. Conecta o sinal 'fileChanged' ao seu método de tratamento
+        self.file_watcher.fileChanged.connect(self.handle_file_change)
         self.html_text_ = ""
         self.complete_html = ""
         self.actual_text_edit = None
@@ -26,13 +35,14 @@ class MarkdownEditor(MainWindow, EditActionsMixin, FileActionsMixin):
 
         self.connect_buttons()
         if file_to_open:
-            self.open_file(file_to_open)
+            self.open_initial_File(file_path_str=file_to_open)
         self.setFocus()
         self.ui.header_frame.installEventFilter(self)
         self.ui.tab_widget.installEventFilter(self)
         self.ui.splitter.installEventFilter(self)
         self.ui.previewArea2.installEventFilter(self)
         self.ui.tab_widget.installEventFilter(self)
+        self.ui.editArea.installEventFilter(self)
 
     def connect_buttons(self):
         self.ui.close_btn.clicked.connect(lambda: self.close())
@@ -48,17 +58,11 @@ class MarkdownEditor(MainWindow, EditActionsMixin, FileActionsMixin):
                 case (Qt.Key_R, Qt.ControlModifier): self.updatePreview(self.actual_text_edit)
                 case (Qt.Key_Backslash, Qt.ControlModifier): self.ui.swapWidgetOnSplitter()
                 case (Qt.Key_Q, Qt.ControlModifier): self.ui.toggle_splitter_orientation()
-                case (Qt.Key_H, Qt.ControlModifier): self.syntaxHelpAndHints()
-                case (Qt.Key_J, Qt.ControlModifier): self.removeSyntaxAndHint()
+                # case (Qt.Key_H, Qt.ControlModifier): self.syntaxHelpAndHints()
+                # case (Qt.Key_J, Qt.ControlModifier): self.removeSyntaxAndHint()
         super().keyPressEvent(event)
 
-    def onTabChange(self, index):
-        self.ui.editArea = self.getCurrentTextEdit(index)
-        if self.ui.editArea is not None:
-            self.updateAfterTabChange(self.ui.editArea)
-            self.ui.editArea.installEventFilter(self)
-        #print(f"Aba mudada: {index}")
-    
+
     def updateAfterTabChange(self, textEdit):
         plain_text = textEdit.toPlainText()
         self.html_text_ = self.getMarkdownText(plain_text)
@@ -67,7 +71,7 @@ class MarkdownEditor(MainWindow, EditActionsMixin, FileActionsMixin):
             
     def inteliComplete(self):
         cursor = self.ui.editArea.textCursor()
-        cursor.movePosition(QTextCursor.EndOfLine)  # Move o cursor para o final da linha atual
+        cursor.movePosition(QTextCursor.EndOfLine)
         
         actual_line = cursor.block().text().strip()
         previous_line = cursor.block().previous().text().strip()  # Obtém o texto da linha anterior
@@ -97,21 +101,14 @@ class MarkdownEditor(MainWindow, EditActionsMixin, FileActionsMixin):
 
     def getCurrentTextEdit(self, current_index):
         """Recupera o QTextEdit da aba atualmente selecionada"""
-        # Obtém o índice da aba atualmente selecionada
-        #current_index = self.ui.tab_widget.currentIndex()
-        
         if current_index == -1:
-            # Nenhuma aba selecionada
             return None
-        
         # Obtém o widget da aba selecionada
         current_tab = self.ui.tab_widget.widget(current_index)
         
         if current_tab is not None:
-            # Procura pelo QTextEdit dentro do layout da aba
             layout = current_tab.layout()
             if layout is not None and layout.count() > 0:
-                # Assume que o QTextEdit é o primeiro widget no layout
                 text_edit = layout.itemAt(0).widget()
                 if isinstance(text_edit, QTextEdit):
                     return text_edit

@@ -2,18 +2,9 @@ import os
 import sys
 
 from PySide6.QtCore import QFile, QIODevice
-from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import QApplication
 from editor.editor_core import MarkdownEditor
-
-
-def resource_path(relative_path: str) -> str:
-    """Obtém o caminho absoluto do recurso, funciona no dev e no executável."""
-    if hasattr(sys, "_MEIPASS"):
-        # quando rodando no executável do PyInstaller
-        return os.path.join(sys._MEIPASS, relative_path)
-    return os.path.join(os.path.abspath("."), relative_path)
-
+from ui.ui_docV import resource_path
 
 def main():
     app = QApplication(sys.argv)
@@ -34,3 +25,6 @@ def main():
 
 if __name__ == "__main__":
     main()
+## TODO: ajustar icones
+## TODO: ajustar temas dark-high para ficar dinamico
+## TODO: ajustar tema padrão dark-night

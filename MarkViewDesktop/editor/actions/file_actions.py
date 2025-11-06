@@ -1,12 +1,14 @@
 from PySide6.QtWidgets import (
-    QFileDialog, QMessageBox, QInputDialog, QTextEdit, QWidget, QVBoxLayout
-    )
+    QFileDialog, QMessageBox, QInputDialog, QTextEdit, QWidget, QVBoxLayout, QSizePolicy
+)
 import os
 
-from ui_utils import style_text_edit
+from ui.ui_utils import style_text_edit
 
 
 class FileActionsMixin:
+
+
 
     def new_file(self):
         new_tab = QWidget()
@@ -121,7 +123,6 @@ class FileActionsMixin:
         return False
 
     def saveFileDialog(self):
-        # Define o filtro para apenas arquivos .md
         filter = "Markdown Files (*.md);;All Files (*)"
         fname, _ = QFileDialog.getSaveFileName(self, 'Save file', '', filter)
         current_index = self.ui.tab_widget.currentIndex()
@@ -135,9 +136,10 @@ class FileActionsMixin:
                 # Atualiza o nome da aba atual para o nome do arquivo salvo
         self.ui.open_files[current_tab][1] = False
         self.ui.open_files[current_tab][2] = False
-        file_name = fname.split('/')[-1]  # Extrai o nome do arquivo do caminho
-        self.ui.tab_widget.setTabText(current_index, file_name)
-        self.ui.tab_widget.setTabToolTip(current_index, fname)
+        if fname != "":
+            file_name = fname.split('/')[-1]  # Extrai o nome do arquivo do caminho
+            self.ui.tab_widget.setTabText(current_index, file_name)
+            self.ui.tab_widget.setTabToolTip(current_index, fname)
 
     def saveFile(self):
         """Salva as mudanças no arquivo atual"""
@@ -208,14 +210,12 @@ class FileActionsMixin:
 
     def showDialogAndOpenFile(self):
         options = QFileDialog.Options()
-        options |= QFileDialog.ReadOnly  # Abre o arquivo em modo somente leitura
+        options |= QFileDialog.ReadOnly
         filter = "Markdown Files (*.md);;All Files (*)"
         file_path, _ = QFileDialog.getOpenFileName(self, "Abrir Arquivo", "", filter, options=options)
 
-        file_name = ""
         if file_path:
             file_name = os.path.basename(file_path)
-            # Carregar o conteúdo do arquivo ou realizar alguma ação com ele
             with open(file_path, 'r', encoding='utf-8') as file:
                 # content = file.read()
                 # self.ui.previewArea.setPlainText(content)
@@ -228,8 +228,8 @@ class FileActionsMixin:
 
         # Criando uma área de texto
         text_edit = QTextEdit()  # TextEditWithLineNumbers()
-        text_edit.setStyleSheet("background-color: #DCDCDC;")
         text_edit.setTabStopDistance(32)
+        text_edit.setAcceptRichText(False)
         layout.addWidget(text_edit)
         layout.setContentsMargins(4, 4, 4, 4)
         new_tab.setLayout(layout)
@@ -245,6 +245,60 @@ class FileActionsMixin:
 
         # Armazena o caminho do arquivo no widget da aba como chave
         self.ui.open_files[new_tab] = [file_.name, False, False]
-        self.checkIfAnyItemHidden()
+        # self.checkIfAnyItemHidden()
 
 
+    def open_initial_File(self, file_path_str=None):
+        """
+        Abre um arquivo.
+        Se 'file_path_str' for fornecido, abre o arquivo diretamente.
+        Caso contrário, abre uma caixa de diálogo para o usuário selecionar.
+        """
+
+        file_path = file_path_str
+        #
+        # # 1. Se o caminho do arquivo NÃO foi fornecido (ou é None), abre a caixa de diálogo.
+        # if not file_path:
+        #     options = QFileDialog.Options()
+        #     options |= QFileDialog.ReadOnly
+        #     filter = "Markdown Files (*.md);;All Files (*)"
+        #     # A caixa de diálogo retorna o caminho e um filtro (que ignoramos com o _)
+        #     file_path, _ = QFileDialog.getOpenFileName(self, "Abrir Arquivo", "", filter, options=options)
+        #
+        # 2. Se um caminho válido foi obtido (seja via parâmetro ou diálogo)
+        if file_path and os.path.exists(file_path):
+            try:
+                # Garante que o nome do arquivo seja extraído corretamente
+                file_name = os.path.basename(file_path)
+
+                # Abre o arquivo para passá-lo para open_file
+                with open(file_path, 'r', encoding='utf-8') as file:
+                    # Chama a sua função existente 'open_file'
+                    self.open_file(file, file_name, file_path)
+
+            except Exception as e:
+                # Adicione tratamento de erro apropriado aqui (ex: mostrar mensagem de erro)
+                print(f"Erro ao abrir o arquivo {file_path}: {e}")
+                # Opcional: self.show_error_message("Erro de Leitura", f"Não foi possível ler o arquivo: {e}")
+
+    def handle_file_change(self, path):
+        """
+        Slot chamado quando o arquivo monitorado é modificado no disco.
+        """
+        print(f"ALERTA: O arquivo {path} foi modificado por um processo externo!")
+
+        # Lógica para o Editor:
+        # Você deve perguntar ao usuário o que fazer, a menos que seja um auto-recarregamento.
+
+        reply = QMessageBox.question(
+            self,
+            'Arquivo Modificado',
+            'O arquivo foi modificado no disco por um programa externo. Deseja recarregá-lo (perdendo as alterações não salvas)?',
+            QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No
+        )
+
+        if reply == QMessageBox.StandardButton.Yes:
+            self.load_file_content()
+        else:
+            # Se o usuário disser 'Não', você pode apenas alertá-lo e manter o estado atual
+            pass

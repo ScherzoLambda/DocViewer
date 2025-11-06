@@ -2,6 +2,9 @@ from PySide6.QtCore import Qt
 from PySide6.QtGui import QPixmap, QPainter, QColor
 from PySide6.QtSvg import QSvgRenderer
 
+# Importa as novas classes de estilo (mantém compatibilidade com nomes antigos abaixo)
+from .styles import ButtonStyles, ComboStyles, CloseButtonStyles, MiscStyles
+
 
 def loadSvgIconColored(file_path, width=80, height=80, color=None):
     svg_renderer = QSvgRenderer(file_path)
@@ -9,7 +12,8 @@ def loadSvgIconColored(file_path, width=80, height=80, color=None):
         raise ValueError(f"Arquivo SVG inválido: {file_path}")
 
     pixmap = QPixmap(width, height)
-    pixmap.fill(Qt.transparent)  # Fundo transparente
+    # Usa QColor transparente explicitamente para evitar avisos estáticos sobre Qt.transparent
+    pixmap.fill(QColor(0, 0, 0, 0))  # Fundo transparente
     painter = QPainter(pixmap)
 
     # Renderiza o SVG normalmente primeiro
@@ -29,117 +33,45 @@ def loadSvgIconColored(file_path, width=80, height=80, color=None):
         # painter.drawRect(pixmap.rect())  # Aplica a cor às áreas do SVG
     else:
         color = QColor('#ffffff')
-    painter.setCompositionMode(QPainter.CompositionMode_SourceIn)
+
+    # Resolver dinamicamente o modo de composição (evita referências estaticamente problemáticas)
+    comp_mode = getattr(QPainter, 'CompositionMode_SourceIn', None)
+    if comp_mode is None:
+        comp_enum = getattr(QPainter, 'CompositionMode', None)
+        if comp_enum is not None and hasattr(comp_enum, 'SourceIn'):
+            comp_mode = getattr(comp_enum, 'SourceIn')
+
+    if comp_mode is not None:
+        painter.setCompositionMode(comp_mode)
+
+    # Resolver dinamicamente NoPen (compatível com variações do Qt)
+    no_pen = None
+    pen_style = getattr(Qt, 'PenStyle', None)
+    if pen_style is not None and hasattr(pen_style, 'NoPen'):
+        no_pen = getattr(pen_style, 'NoPen')
+    elif hasattr(Qt, 'NoPen'):
+        no_pen = getattr(Qt, 'NoPen')
+
+    if no_pen is not None:
+        painter.setPen(no_pen)
+
     painter.setBrush(QColor(color))
-    painter.setPen(Qt.NoPen)
     painter.drawRect(pixmap.rect())
     painter.end()
     return pixmap
 
-mark_btn_id = "mark-btn"
-style_button = """
-QToolTip,QPushButton {
-     /* Cor de fundo padrão */
-    border: 2px solid #161b22; /* Borda */
-    color: white; /* Cor do texto */
+# Expor identificador de botão (compatibilidade)
+mark_btn_id = ButtonStyles.mark_btn_id
 
-    /* border-radius: 4px; Borda arredondada */
-}
-QPushButton:hover {
-    background-color: #DCDCDC; /* Cor de fundo quando o mouse está sobre o botão */
-}
-QFrame, QLabel {
-border: 1px solid transparent;
-}
-"""
-style_utils = """
-    QComboBox
-    {
-        background-color: #1C1C1C;
-        color: #FFFFFF;
-        border: 1px solid #666666;
-    }
-    QComboBox:hover
-    {
-        border: 1px solid #3399FF;
-    }
-    QComboBox QAbstractItemView::item:hover {
-        border: 1px solid #3399FF;
-        background-color: #8C8C8C;
-    }
-    /*QComboBox QAbstractItemView {
-        border: 1px solid #3399FF;
-        border-radius: 6px;
-        background-color: #2b2b2b;
-        selection-background-color: #3399ff;
-        selection-color: #3399ff;
-        padding: 5px; /* Espaçamento interno da lista */
-    }*/
-"""
-style_closeBTN = """
-QPushButton {
-    border: none;
-    background-color: transparent;
-    border: 1px solid #f4696b;
-}
-QPushButton:hover {
-    background-color: #f4696b;  /* cor de fundo*/
-}
-"""
-style_m_M = """
-QPushButton {
-    font-size: 18px;
-    color: #000000;
-    border: 1px solid #007BFF;
-    border-radius: 4px;
-    font-weight: bold;
-    background-color: transparent;
-}
-QPushButton:hover {
-    background-color: #55AAFF; /* Lighter accent on hover */
-    border-color: #3399FF;  
-}
-"""
-style_splitter = """
-QSplitter::handle {
-    background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,stop: 0 #333333, stop: 1 #444444);
-    border: 1px solid #666666;
-    height: 15px;
-    border-radius: 4px;
-}
-
-QSplitter::handle:hover {
-    background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,stop: 0 #444444, stop: 1 #555555);
-}
-"""
-style_preview = """
-QWebEngineView {
-    background-color: #2B2B2B;
-    border: 1px solid #3399FF;
-    border-radius: 4px;
-}
-
-QWebEngineView:focus {
-    border: 1px solid #4F9EE3;
-}
-"""
-
-style_text_edit = """
-QTextEdit
-{
-	background-color: #1C1C1C;
-	color: #FFFFFF;
-	border: 1px solid #666666;
-	border-radius: 4px;
-}
-QTextEdit:focus{ border: 1px solid #3399FF}
-"""
-
-style_text_browse = """
-QTextBrowser {
-    border-radius: 4px;
-    border: 1px solid #555555;
-    border-left: none;
-	border-right: none;
-}
-"""
+# Mapear as antigas variáveis de estilo para as novas classes
+style_button2 = ButtonStyles.style_button2
+style_button = ButtonStyles.style_button
+style_utils = ComboStyles.style_utils
+style_closeBTN = CloseButtonStyles.style_closeBTN
+style_m_M = MiscStyles.btn_max_min
+style_splitter = MiscStyles.style_splitter
+style_preview = MiscStyles.style_preview
+style_text_edit = MiscStyles.style_text_edit
+style_text_browse = MiscStyles.style_text_browse
+style_combo_box = MiscStyles.combo_box
+style_spin_box = MiscStyles.spin_box
