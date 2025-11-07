@@ -13,4 +13,4 @@ pyinstaller --noconsole --name DocViewer \
   --exclude-module PySide6.QtCharts \
   --exclude-module PySide6.QtWebEngineWidgets \
   --strip \
-  MarkViewDesktop/main.py
+  DocViewerDesktop/main.py

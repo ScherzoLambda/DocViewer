@@ -6,7 +6,7 @@ on:
       - linux-release-not
     tags: [ "*" ]
     paths:
-      - 'MarkViewDesktop/**'
+      - 'DocViewerDesktop/**'
   workflow_dispatch:
 
 jobs:

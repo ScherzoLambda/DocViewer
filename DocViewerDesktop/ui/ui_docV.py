@@ -23,7 +23,6 @@ def loadSvgIcon(file_path, width=80, height=80):
     return pixmap
 
 class Ui_MainWindow(object):
-    # iconspath = "_internal\\"+ "\\icons_svg" + "\\"
     iconspath = resource_path("resources/icons_svg/")
     print(iconspath)
 
@@ -168,14 +167,14 @@ class Ui_MainWindow(object):
         self.heading_btn = QtWidgets.QPushButton(self.buttons_frame)
         self.heading_btn.setObjectName(mark_btn_id)
         self.heading_btn.setStyleSheet(style_button2)
-        self.heading_btn.setMinimumHeight(25)
+        self.heading_btn.setMinimumHeight(30)
         self.editButtonsHL.addWidget(self.heading_btn)
         self.heading_btn.setIcon(loadSvgIconColored(self.iconspath+'/bx-heading.svg'))
         self.heading_btn.setToolTip("Header text")
         
         self.bold_btn = QtWidgets.QPushButton(self.buttons_frame)
         self.bold_btn.setObjectName(mark_btn_id)
-        self.bold_btn.setMinimumHeight(25)
+        self.bold_btn.setMinimumHeight(30)
         self.bold_btn.setStyleSheet(style_button2)
         self.bold_btn.setIcon(loadSvgIconColored(self.iconspath+'/bold.svg'))
         self.bold_btn.setToolTip("Bold text")
@@ -184,7 +183,7 @@ class Ui_MainWindow(object):
         self.italic_btn = QtWidgets.QPushButton(self.buttons_frame)
         self.italic_btn.setObjectName(mark_btn_id)
         self.italic_btn.setStyleSheet(style_button2)
-        self.italic_btn.setMinimumHeight(25)
+        self.italic_btn.setMinimumHeight(30)
         self.italic_btn.setMinimumWidth(15)
         self.italic_btn.setIcon(loadSvgIconColored('resources/icons_svg/bx-italic.svg'))
         self.italic_btn.setToolTip("Italic Text")
@@ -193,7 +192,7 @@ class Ui_MainWindow(object):
         self.quote_btn = QtWidgets.QPushButton(self.buttons_frame)
         self.quote_btn.setObjectName(mark_btn_id)
         self.quote_btn.setStyleSheet(style_button2)
-        self.quote_btn.setMinimumHeight(25)
+        self.quote_btn.setMinimumHeight(30)
         self.quote_btn.setIcon(loadSvgIconColored('resources/icons_svg/bxs-quote-right.svg'))
         self.quote_btn.setToolTip("Block Quote")
         self.editButtonsHL.addWidget(self.quote_btn)
@@ -201,7 +200,7 @@ class Ui_MainWindow(object):
         self.link_btn = QtWidgets.QPushButton(self.buttons_frame)
         self.link_btn.setObjectName(mark_btn_id)
         self.link_btn.setStyleSheet(style_button2)
-        self.link_btn.setMinimumHeight(25)
+        self.link_btn.setMinimumHeight(30)
         self.link_btn.setIcon(loadSvgIconColored(self.iconspath+'/bx-link.svg'))
         self.link_btn.setToolTip("refer a link")
         self.editButtonsHL.addWidget(self.link_btn)
@@ -209,7 +208,7 @@ class Ui_MainWindow(object):
         self.unList_btn = QtWidgets.QPushButton(self.buttons_frame)
         self.unList_btn.setObjectName(mark_btn_id)
         self.unList_btn.setStyleSheet(style_button2)
-        self.unList_btn.setMinimumHeight(25)
+        self.unList_btn.setMinimumHeight(30)
 
 
         self.unList_btn.setIcon(loadSvgIconColored(self.iconspath+'/menu.svg'))
@@ -219,7 +218,7 @@ class Ui_MainWindow(object):
         self.nList_btn = QtWidgets.QPushButton(self.buttons_frame)
         self.nList_btn.setObjectName(mark_btn_id)
         self.nList_btn.setStyleSheet(style_button2)
-        self.nList_btn.setMinimumHeight(25)
+        self.nList_btn.setMinimumHeight(30)
         self.nList_btn.setIcon(loadSvgIconColored(self.iconspath+'/numbered-list.svg'))
         self.nList_btn.setText("")
         self.nList_btn.setToolTip("Numbered List")
@@ -228,7 +227,7 @@ class Ui_MainWindow(object):
         self.taskList_btn = QtWidgets.QPushButton(self.buttons_frame)
         self.taskList_btn.setObjectName(mark_btn_id)
         self.taskList_btn.setStyleSheet(style_button2)
-        self.taskList_btn.setMinimumHeight(25)
+        self.taskList_btn.setMinimumHeight(30)
         self.taskList_btn.setIcon(loadSvgIconColored('resources/icons_svg/bxs-check.svg'))
         self.taskList_btn.setToolTip("Task List")
         self.editButtonsHL.addWidget(self.taskList_btn)
@@ -280,51 +279,6 @@ class Ui_MainWindow(object):
         
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
-
-
-    
-    # def scroll_to_bottom(self, ok):
-    #     """
-    #     Executa JavaScript para scrollar a página para o final.
-    #
-    #     Args:
-    #         ok (bool): True se o carregamento foi bem-sucedido, False caso contrário.
-    #     """
-    #     if ok:
-    #         javascript_code = "window.scrollTo(0, document.body.scrollHeight);"
-    #         self.previewArea.page().runJavaScript(javascript_code)
-    #     else:
-    #         print("Erro ao carregar a página.")
-    
-    #================ Dinamicidade UI
-    def swapWidgetOnSplitter(self):
-        # Obtém os índices atuais dos widgets no splitter
-        index_tabWidget = self.splitter.indexOf(self.tab_widget)
-        index_preview_area = self.splitter.indexOf(self.previewArea2)
-        # print(index_tabWidget, "wid_1", sep="|")
-        # print(index_preview_area, "wid_2", sep="|")
-        if index_tabWidget < index_preview_area:
-            # Remove os widgets temporariamente
-            self.splitter.widget(index_tabWidget).setParent(None)
-            self.splitter.widget(index_preview_area-1).setParent(None)
-            # Adiciona os widgets de volta em ordem trocada
-            self.splitter.insertWidget(index_tabWidget, self.previewArea2)
-            self.splitter.insertWidget(index_preview_area, self.tab_widget)
-        else:
-            self.splitter.widget(index_tabWidget-1).setParent(None)
-            self.splitter.widget(index_preview_area).setParent(None)  
-            # Adiciona os widgets de volta em ordem trocada
-            self.splitter.insertWidget(index_tabWidget, self.previewArea2)
-            self.splitter.insertWidget(index_preview_area, self.tab_widget)
-    
-    def toggle_splitter_orientation(self):
-            # Alterna a orientação do splitter entre horizontal e vertical
-            if self.splitter.orientation() == QtCore.Qt.Horizontal:
-                self.splitter.setOrientation(QtCore.Qt.Vertical)
-            else:
-                self.splitter.setOrientation(QtCore.Qt.Horizontal)
-                # self.splitter.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
-
 
     #================ Função que traduz a UI
     def retranslateUi(self, MainWindow):

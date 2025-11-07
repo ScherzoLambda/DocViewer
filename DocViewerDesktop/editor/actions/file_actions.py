@@ -180,6 +180,7 @@ class FileActionsMixin:
 
         if file_path:
             try:
+                print(self.current_file_path)
                 # Carrega o conteúdo do arquivo selecionado
                 with open(file_path, 'r', encoding='utf-8') as file:
                     content = file.read()
@@ -302,3 +303,30 @@ class FileActionsMixin:
         else:
             # Se o usuário disser 'Não', você pode apenas alertá-lo e manter o estado atual
             pass
+
+    def load_file_content(self):
+        """
+        Recarrega o conteúdo do arquivo monitorado no editor.
+        """
+        current_index = self.ui.tab_widget.currentIndex()
+        current_tab = self.ui.tab_widget.widget(current_index)
+
+        if current_tab in self.ui.open_files:
+            file_info = self.ui.open_files[current_tab]
+            file_path = file_info[0]
+
+            try:
+                with open(file_path, 'r', encoding='utf-8') as file:
+                    content = file.read()
+
+                # Atualiza o conteúdo do QTextEdit
+                layout = current_tab.layout()
+                if layout is not None and layout.count() > 0:
+                    text_edit = layout.itemAt(0).widget()
+                    if isinstance(text_edit, QTextEdit):
+                        text_edit.setPlainText(content)
+                        self.ui.open_files[current_tab][1] = False  # Marca como não modificado
+
+                print(f"Arquivo {file_path} recarregado com sucesso.")
+            except Exception as e:
+                print(f"Erro ao recarregar o arquivo: {e}")

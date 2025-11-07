@@ -1,4 +1,4 @@
-from PySide6 import QtGui
+from PySide6 import QtGui, QtCore
 from PySide6.QtCore import Qt, QEvent, QFileSystemWatcher
 from PySide6.QtGui import QIcon, QTextCursor
 from PySide6.QtWidgets import QTextEdit
@@ -56,12 +56,11 @@ class MarkdownEditor(MainWindow, EditActionsMixin, FileActionsMixin):
                 case (Qt.Key_O, Qt.ControlModifier): self.showDialogAndOpenFile()
                 case (Qt.Key_S, Qt.ControlModifier): self.saveFile()
                 case (Qt.Key_R, Qt.ControlModifier): self.updatePreview(self.actual_text_edit)
-                case (Qt.Key_Backslash, Qt.ControlModifier): self.ui.swapWidgetOnSplitter()
-                case (Qt.Key_Q, Qt.ControlModifier): self.ui.toggle_splitter_orientation()
+                case (Qt.Key_Backslash, Qt.ControlModifier): self.swapWidgetOnSplitter()
+                case (Qt.Key_Q, Qt.ControlModifier): self.toggle_splitter_orientation()
                 # case (Qt.Key_H, Qt.ControlModifier): self.syntaxHelpAndHints()
                 # case (Qt.Key_J, Qt.ControlModifier): self.removeSyntaxAndHint()
         super().keyPressEvent(event)
-
 
     def updateAfterTabChange(self, textEdit):
         plain_text = textEdit.toPlainText()
@@ -113,4 +112,47 @@ class MarkdownEditor(MainWindow, EditActionsMixin, FileActionsMixin):
                 if isinstance(text_edit, QTextEdit):
                     return text_edit
         
-        return None   
+        return None
+
+        # ================ Dinamicidade UI
+
+    def swapWidgetOnSplitter(self):
+        # Obtém os índices atuais dos widgets no splitter
+        index_tabWidget = self.ui.splitter.indexOf(self.ui.tab_widget)
+        index_preview_area = self.ui.splitter.indexOf(self.ui.previewArea2)
+        # print(index_tabWidget, "wid_1", sep="|")
+        # print(index_preview_area, "wid_2", sep="|")
+        if index_tabWidget < index_preview_area:
+            # Remove os widgets temporariamente
+            self.ui.splitter.widget(index_tabWidget).setParent(None)
+            self.ui.splitter.widget(index_preview_area - 1).setParent(None)
+            # Adiciona os widgets de volta em ordem trocada
+            self.ui.splitter.insertWidget(index_tabWidget, self.ui.previewArea2)
+            self.ui.splitter.insertWidget(index_preview_area, self.ui.tab_widget)
+        else:
+            self.ui.splitter.widget(index_tabWidget - 1).setParent(None)
+            self.ui.splitter.widget(index_preview_area).setParent(None)
+            # Adiciona os widgets de volta em ordem trocada
+            self.ui.splitter.insertWidget(index_tabWidget, self.ui.previewArea2)
+            self.ui.splitter.insertWidget(index_preview_area, self.ui.tab_widget)
+
+    def toggle_splitter_orientation(self):
+        # Alterna a orientação do splitter entre horizontal e vertical
+        if self.ui.splitter.orientation() == QtCore.Qt.Horizontal:
+            self.ui.splitter.setOrientation(QtCore.Qt.Vertical)
+        else:
+            self.ui.splitter.setOrientation(QtCore.Qt.Horizontal)
+            # self.splitter.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
+
+    # def scroll_to_bottom(self, ok):
+    #     """
+    #     Executa JavaScript para scrollar a página para o final.
+    #
+    #     Args:
+    #         ok (bool): True se o carregamento foi bem-sucedido, False caso contrário.
+    #     """
+    #     if ok:
+    #         javascript_code = "window.scrollTo(0, document.body.scrollHeight);"
+    #         self.previewArea.page().runJavaScript(javascript_code)
+    #     else:
+    #         print("Erro ao carregar a página.")

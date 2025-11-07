@@ -2,9 +2,7 @@ from PySide6.QtCore import Qt
 from PySide6.QtGui import QPixmap, QPainter, QColor
 from PySide6.QtSvg import QSvgRenderer
 
-# Importa as novas classes de estilo (mantém compatibilidade com nomes antigos abaixo)
 from .styles import ButtonStyles, ComboStyles, CloseButtonStyles, MiscStyles
-
 
 def loadSvgIconColored(file_path, width=80, height=80, color=None):
     svg_renderer = QSvgRenderer(file_path)
@@ -60,10 +58,9 @@ def loadSvgIconColored(file_path, width=80, height=80, color=None):
     painter.end()
     return pixmap
 
-# Expor identificador de botão (compatibilidade)
+
 mark_btn_id = ButtonStyles.mark_btn_id
 
-# Mapear as antigas variáveis de estilo para as novas classes
 style_button2 = ButtonStyles.style_button2
 style_button = ButtonStyles.style_button
 style_utils = ComboStyles.style_utils
