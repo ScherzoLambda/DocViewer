@@ -264,14 +264,13 @@ class MarkdownHighlighter(QSyntaxHighlighter):
         self.code_block_rules["python"].append((QRegularExpression("#.*"), comment_format))
 
     def highlightBlock(self, text):
-        # Aplica regras gerais do Markdown
         for pattern, fmt in self.highlighting_rules:
             match_iterator = pattern.globalMatch(text)
             while match_iterator.hasNext():
                 match = match_iterator.next()
                 self.setFormat(match.capturedStart(), match.capturedLength(), fmt)
 
-        # Detecta e destaca blocos de código com linguagem
+
         self.highlight_fenced_code_blocks(text)
 
     def highlight_fenced_code_blocks(self, text):
@@ -285,16 +284,14 @@ class MarkdownHighlighter(QSyntaxHighlighter):
             code_start = match.capturedStart(2)
             code_length = match.capturedLength(2)
 
-            # Aplica fundo ao bloco inteiro
             self.setFormat(match.capturedStart(), match.capturedLength(), self.code_block_bg)
 
-            # Se for Python, aplica destaque interno
+
             if lang == "python" and lang in self.code_block_rules:
                 code_text = match.captured(2)
-                # Reaplica o fundo no código (por segurança)
+
                 self.setFormat(code_start, code_length, self.code_block_bg)
 
-                # Aplica regras de Python
                 for pattern, fmt in self.code_block_rules["python"]:
                     code_match_iterator = pattern.globalMatch(code_text)
                     while code_match_iterator.hasNext():

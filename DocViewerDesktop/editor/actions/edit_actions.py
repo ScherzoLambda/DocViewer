@@ -13,7 +13,6 @@ class EditActionsMixin:
     def init_ui(self):
         self.ui.menu = self.create_file_menu()
         # self.ui.splitter.setStyleSheet("QSplitter::handle {background-color:#dfe2e5; height: 30px;}")
-        self.ui.editArea.setFocus()
         # self.ui.previewArea.setZoomFactor(0.8)
         self.setGeometry(100, 100, 800, 600)
         self.setWindowTitle('DocViewer')
@@ -60,7 +59,6 @@ class EditActionsMixin:
         pass
 
     def show_menu(self):
-        print(self.has_open_menu)
         self.ui.menu.exec(self.ui.file_btn.mapToGlobal(self.ui.file_btn.rect().bottomLeft()))
         # if not self.has_open_menu:
         #     self.has_open_menu = True
@@ -73,17 +71,15 @@ class EditActionsMixin:
         Slot chamado quando o menu está prestes a ser escondido,
         seja por clique em uma ação ou clique fora.
         """
-        print("CHamou o closed")
         if self.has_open_menu:
             self.has_open_menu = False
-        print(self.has_open_menu)
 
     def onTabChange(self, index):
         self.ui.editArea = self.getCurrentTextEdit(index)
         if self.ui.editArea is not None:
             self.updateAfterTabChange(self.ui.editArea)
             self.ui.editArea.installEventFilter(self)
-        #print(f"Aba mudada: {index}")
+        print(f"Aba mudada: {index}")
 
     def onTabRightClick(self, position):
         """Exibe um diálogo para renomear arquivo ao clicar com o botão direito em cima da aba"""
@@ -157,9 +153,7 @@ class EditActionsMixin:
         """Atualiza a visualização com base no conteúdo do QTextEdit fornecido"""
         markdown_text = text_edit.toPlainText()
         self.verifyChangesAndSetTabName()
-        
         self.html_text_ = self.getMarkdownText(markdown_text)
-        # print(self.html_text_)
         self.updateCompleteHtml()
         self.ui.previewArea2.setHtml(self.complete_html)
         ### TODO: Permitir ativar e desativar esta funcionalidade
@@ -306,14 +300,15 @@ class EditActionsMixin:
         """
     
     def verifyChangesAndSetTabName(self):
+        print("Verificando mudanças no arquivo...")
         current_index = self.ui.tab_widget.currentIndex()
         current_tab = self.ui.tab_widget.widget(current_index)
         if current_tab in self.ui.open_files:
-            # Atualiza o estado de isModified para True
             file_path = self.ui.open_files[current_tab][0]
             isModified = self.ui.open_files[current_tab][1]
             if not file_path.endswith('*') and not isModified:
-                file_name = file_path.split('/')[-1]  # Pega o último componente do caminho
+                print("Arquivo modificado, atualizando nome da aba...")
+                file_name = file_path.split('/')[-1]  
                 self.ui.tab_widget.setTabText(current_index, f"{file_name}*")
                 self.ui.open_files[current_tab][1] = True
 

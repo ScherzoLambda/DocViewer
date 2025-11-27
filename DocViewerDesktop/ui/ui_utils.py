@@ -1,8 +1,8 @@
+import os
+import sys
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QPixmap, QPainter, QColor
 from PySide6.QtSvg import QSvgRenderer
-
-from .styles import ButtonStyles, ComboStyles, CloseButtonStyles, MiscStyles
 
 def loadSvgIconColored(file_path, width=80, height=80, color=None):
     svg_renderer = QSvgRenderer(file_path)
@@ -58,17 +58,19 @@ def loadSvgIconColored(file_path, width=80, height=80, color=None):
     painter.end()
     return pixmap
 
+def loadSvgIcon(file_path, width=80, height=80):
+    svg_renderer = QSvgRenderer(file_path)
+    pixmap = QPixmap(width, height)
+    pixmap.fill(Qt.transparent)
+    painter = QPainter(pixmap)
+    svg_renderer.render(painter)
+    painter.end()
+    return pixmap
 
-mark_btn_id = ButtonStyles.mark_btn_id
+def resource_path(relative_path: str) -> str:
+    """Obtém o caminho absoluto do recurso"""
+    if hasattr(sys, "_MEIPASS"):
+        # quando rodando no executável do PyInstaller
+        return os.path.join(sys._MEIPASS, relative_path)
+    return os.path.join(os.path.abspath("."), relative_path)
 
-style_button2 = ButtonStyles.style_button2
-style_button = ButtonStyles.style_button
-style_utils = ComboStyles.style_utils
-style_closeBTN = CloseButtonStyles.style_closeBTN
-style_m_M = MiscStyles.btn_max_min
-style_splitter = MiscStyles.style_splitter
-style_preview = MiscStyles.style_preview
-style_text_edit = MiscStyles.style_text_edit
-style_text_browse = MiscStyles.style_text_browse
-style_combo_box = MiscStyles.combo_box
-style_spin_box = MiscStyles.spin_box

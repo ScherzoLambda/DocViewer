@@ -1,14 +1,13 @@
+from PySide6.QtGui import Qt
 from PySide6.QtWidgets import (
-    QFileDialog, QMessageBox, QInputDialog, QTextEdit, QWidget, QVBoxLayout, QSizePolicy
+    QFileDialog, QMessageBox, QInputDialog, QTextEdit, QWidget, QVBoxLayout, QDialog, QLabel, QHBoxLayout, QPushButton
 )
 import os
 
-from ui.ui_utils import style_text_edit
+from ui.ui_styles import style_text_edit
 
 
 class FileActionsMixin:
-
-
 
     def new_file(self):
         new_tab = QWidget()
@@ -27,6 +26,7 @@ class FileActionsMixin:
         tab_index = self.ui.tab_widget.addTab(new_tab, new_file_name)
         self.ui.tab_widget.setCurrentIndex(tab_index)
         text_edit.setFocus()
+        text_edit.textChanged.connect(self.verifyChangesAndSetTabName)
 
         self.ui.open_files[new_tab] = [new_file_name, False, True]
         #self.checkIfAnyItemHidden()
@@ -117,7 +117,9 @@ class FileActionsMixin:
                                          QMessageBox.Yes | QMessageBox.No | QMessageBox.Cancel)
 
             if reply == QMessageBox.Yes:
-                return self.save_file(tab_index)
+                # Usa o método existente saveFile (camelCase) e continua
+                self.saveFile()
+                return False
             elif reply == QMessageBox.Cancel:
                 return True  # Cancela a ação
         return False
@@ -127,19 +129,21 @@ class FileActionsMixin:
         fname, _ = QFileDialog.getSaveFileName(self, 'Save file', '', filter)
         current_index = self.ui.tab_widget.currentIndex()
         current_tab = self.ui.tab_widget.widget(current_index)
-        if fname:
-            # Adiciona a extensão .md se não estiver presente
+        if fname and fname != '':
             if not fname.endswith('.md'):
                 fname += '.md'
             with open(fname, 'w', encoding='utf-8') as file:
                 file.write(self.ui.editArea.toPlainText())
-                # Atualiza o nome da aba atual para o nome do arquivo salvo
-        self.ui.open_files[current_tab][1] = False
-        self.ui.open_files[current_tab][2] = False
-        if fname != "":
+
+            self.ui.open_files[current_tab][0] = fname
+            self.ui.open_files[current_tab][1] = False
+            self.ui.open_files[current_tab][2] = False
             file_name = fname.split('/')[-1]  # Extrai o nome do arquivo do caminho
             self.ui.tab_widget.setTabText(current_index, file_name)
             self.ui.tab_widget.setTabToolTip(current_index, fname)
+        else:
+            return
+
 
     def saveFile(self):
         """Salva as mudanças no arquivo atual"""
@@ -172,15 +176,35 @@ class FileActionsMixin:
     # ============== Abertura de um arquivo/Novo Arquivo
     def open_here(self, tab_index):
         """Abre um arquivo na aba selecionada, substituindo o conteúdo atual"""
-        # Abre um diálogo para selecionar o arquivo
         options = QFileDialog.Options()
-        file_path, _ = QFileDialog.getOpenFileName(self, "Abrir Arquivo", "",
+        file_path, full_path = QFileDialog.getOpenFileName(self, "Abrir Arquivo", "",
                                                    "Todos os Arquivos (*);;Arquivos de Texto (*.txt);;Markdown Files (*.md)",
                                                    options=options)
-
+        # print(self.current_file_path)
+        # Só adiciona o watcher se o caminho for válido e existir
         if file_path:
             try:
-                print(self.current_file_path)
+                if os.path.exists(file_path):
+                    # Evita adicionar duplicatas: verifica se já está sendo monitorado
+                    try:
+                        watched_files = self.file_watcher.files()
+                    except Exception:
+                        watched_files = []
+
+                    if file_path not in watched_files:
+                        try:
+                            self.file_watcher.addPath(file_path)
+                        except Exception as e:
+                            print(f"Erro ao adicionar path ao file_watcher: {e}")
+                else:
+                    print(f"Caminho selecionado não existe: {file_path}")
+            except Exception as e:
+                print(f"Erro ao verificar/adicionar watcher: {e}")
+        # print(file_path)
+        # print(full_path)
+        if file_path:
+            try:
+
                 # Carrega o conteúdo do arquivo selecionado
                 with open(file_path, 'r', encoding='utf-8') as file:
                     content = file.read()
@@ -188,7 +212,6 @@ class FileActionsMixin:
                 # Obtém o widget da aba selecionada
                 current_tab = self.ui.tab_widget.widget(tab_index)
                 if current_tab:
-                    # Procura pelo QTextEdit dentro do layout da aba
                     layout = current_tab.layout()
                     if layout is not None and layout.count() > 0:
                         # Assume que o QTextEdit é o primeiro widget no layout
@@ -205,7 +228,7 @@ class FileActionsMixin:
                             # Atualiza o dicionário de arquivos abertos
                             self.ui.open_files[current_tab] = [file_name, False, False]
 
-                            print(f"Arquivo {file_name} aberto na aba {tab_index} com sucesso.")
+                            # print(f"Arquivo {file_name} aberto na aba {tab_index} com sucesso.")
             except Exception as e:
                 print(f"Erro ao abrir o arquivo: {e}")
 
@@ -282,27 +305,29 @@ class FileActionsMixin:
                 print(f"Erro ao abrir o arquivo {file_path}: {e}")
                 # Opcional: self.show_error_message("Erro de Leitura", f"Não foi possível ler o arquivo: {e}")
 
-    def handle_file_change(self, path):
-        """
-        Slot chamado quando o arquivo monitorado é modificado no disco.
-        """
-        print(f"ALERTA: O arquivo {path} foi modificado por um processo externo!")
-
-        # Lógica para o Editor:
-        # Você deve perguntar ao usuário o que fazer, a menos que seja um auto-recarregamento.
-
-        reply = QMessageBox.question(
-            self,
-            'Arquivo Modificado',
-            'O arquivo foi modificado no disco por um programa externo. Deseja recarregá-lo (perdendo as alterações não salvas)?',
-            QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No
-        )
-
-        if reply == QMessageBox.StandardButton.Yes:
-            self.load_file_content()
-        else:
-            # Se o usuário disser 'Não', você pode apenas alertá-lo e manter o estado atual
-            pass
+    # def handle_file_change(self):
+    #     """
+    #     Slot chamado quando o arquivo monitorado é modificado no disco. Após o timer de debounce.
+    #     """
+    #     # reply_box = QMessageBox(self)
+    #     # reply_box.setWindowTitle('Arquivo Modificado')
+    #     # reply_box.setText(
+    #     #     'O arquivo foi modificado no disco por um programa externo. Deseja recarregá-lo (perdendo as alterações não salvas)?')
+    #     # reply_box.setStandardButtons(QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No)
+    #     # reply_box.setDefaultButton(QMessageBox.StandardButton.Yes)
+    #     # reply_box.setIcon(QMessageBox.Icon.Question)
+    #     # reply_box.setMinimumSize(600, 600)
+    #     # reply_box.setSizeGripEnabled(True)
+    #     # reply = reply_box.exec()
+    #     message = 'O arquivo foi modificado no disco por um programa externo. Deseja recarregá-lo (perdendo as alterações não salvas)?'
+    #     reply_box = CustomConfirmDialog(message, self)
+    #     reply = reply_box.exec()
+    #
+    #     if reply == QMessageBox.StandardButton.Yes:
+    #         self.load_file_content()
+    #     else:
+    #         # Se o usuário disser 'Não', você pode apenas alertá-lo e manter o estado atual
+    #         pass
 
     def load_file_content(self):
         """
@@ -330,3 +355,40 @@ class FileActionsMixin:
                 print(f"Arquivo {file_path} recarregado com sucesso.")
             except Exception as e:
                 print(f"Erro ao recarregar o arquivo: {e}")
+
+
+class CustomConfirmDialog(QDialog):
+    def __init__(self, message, parent=None):
+        super().__init__(parent)
+        self.setWindowTitle('DocViewer - Arquivo Modificado')
+        self.setMinimumSize(600, 300)  # <<< Agora funciona!
+        # self.setSizeGripEnabled(True)  # Permite redimensionar
+
+        # Layout Principal
+        main_layout = QVBoxLayout(self)
+
+        # Rótulo da Mensagem (pode usar QLabel em vez de QMessageBox.setText)
+        label = QLabel(message)
+        label.setWordWrap(True)  # Para quebras de linha
+        label.setAlignment(Qt.AlignCenter)
+        main_layout.addWidget(label)
+
+        # Layout dos Botões
+        button_layout = QHBoxLayout()
+
+        # Botões
+        btn_yes = QPushButton('Sim')
+        btn_no = QPushButton('Não')
+
+        # Conexões
+        btn_yes.clicked.connect(lambda: self.done(QMessageBox.StandardButton.Yes))
+        btn_no.clicked.connect(lambda: self.done(QMessageBox.StandardButton.No))
+
+        button_layout.addWidget(btn_yes)
+        button_layout.addWidget(btn_no)
+
+        main_layout.addLayout(button_layout)
+
+        # Configurar o botão padrão (para pressionar Enter)
+        btn_yes.setDefault(True)
+        self.setResult(QMessageBox.StandardButton.No)  # Valor padrão de retorno caso feche a janela

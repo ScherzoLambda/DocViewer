@@ -1,30 +1,13 @@
-import os
-import sys
-from PySide6 import QtCore, QtGui, QtWidgets
-from PySide6.QtGui import QIcon, QFont, QTextCursor
+from PySide6 import QtCore, QtWidgets
+from PySide6.QtGui import QIcon, QFont
 from PySide6.QtWidgets import QSplitter, QSpinBox, QComboBox, QTextBrowser
 from ui.ui_utils import *
+from ui.ui_styles import *
 # from PySide6.QtWebEngineWidgets import QWebEngineView
 
-def resource_path(relative_path: str) -> str:
-    """Obtém o caminho absoluto do recurso, funciona no dev e no executável."""
-    if hasattr(sys, "_MEIPASS"):
-        # quando rodando no executável do PyInstaller
-        return os.path.join(sys._MEIPASS, relative_path)
-    return os.path.join(os.path.abspath("."), relative_path)
-
-def loadSvgIcon(file_path, width=80, height=80):
-    svg_renderer = QSvgRenderer(file_path)
-    pixmap = QPixmap(width, height)
-    pixmap.fill(QtCore.Qt.transparent)
-    painter = QPainter(pixmap)
-    svg_renderer.render(painter)
-    painter.end()
-    return pixmap
 
 class Ui_MainWindow(object):
     iconspath = resource_path("resources/icons_svg/")
-    print(iconspath)
 
     def setupUi(self, MainWindow):
         self.new_file_count = 0
@@ -245,7 +228,7 @@ class Ui_MainWindow(object):
         # self.splitter.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
         self.splitter.setObjectName("mainSplitter")
         self.splitter.setStyleSheet(style_splitter)
-        self.editArea = QtWidgets.QTextEdit() #TextEditWithLineNumbers()
+        # self.editArea = QtWidgets.QTextEdit() #TextEditWithLineNumbers()
         # self.editArea.setStyleSheet("background-color: #DCDCDC; color: #000000;")
         # self.editArea.setObjectName("editArea")
         font = QFont()

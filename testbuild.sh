@@ -1,7 +1,7 @@
 pyinstaller --noconsole --name DocViewer \
   --icon="resources/icons_svg/favicon.ico" \
-  --add-data "MarkViewDesktop/ui/dark-high-v0.qss:ui" \
-  --add-data "MarkViewDesktop/resources/icons_svg/*:resources/icons_svg" \
+  --add-data "DocViewerDesktop/ui/dark-high-v0.qss:ui" \
+  --add-data "DocViewerDesktop/resources/icons_svg/*:resources/icons_svg" \
   --hidden-import="ui.ui_utils" \
   --hidden-import="editor.editor_core" \
   --hidden-import="editor.actions.file_actions" \

@@ -1,5 +1,4 @@
-# Arquivo gerado: classes que agrupam folhas de estilo (QSS) para o projeto
-# Mantemos comentários e strings de estilo originais, organizados em classes
+from .ui_utils import resource_path
 
 class ButtonStyles:
     """Estilos relacionados a botões"""
@@ -25,7 +24,6 @@ class ButtonStyles:
     }
     """
 
-
 class ComboStyles:
     """Estilos relacionados a QComboBox / listas"""
     style_utils = """
@@ -43,34 +41,34 @@ class ComboStyles:
         border: 1px solid #3399FF;
         background-color: #8C8C8C;
     }
-    /*QComboBox QAbstractItemView {
+    QComboBox QAbstractItemView {
         border: 1px solid #3399FF;
         border-radius: 6px;
         background-color: #2b2b2b;
         selection-background-color: #3399ff;
         selection-color: #3399ff;
         padding: 5px; /* Espaçamento interno da lista */
-    }*/
-"""
-
+    }
+    """
 
 class CloseButtonStyles:
     """Estilos para o botão de fechar"""
     style_closeBTN = """
-QPushButton {
-    border: none;
-    background-color: transparent;
-    border: 1px solid #f4696b;
-}
-QPushButton:hover {
-    background-color: #f4696b;  /* cor de fundo*/
-    border: 1px solid #f4696b;
-}
-"""
-
+    QPushButton {
+        border: none;
+        background-color: transparent;
+        border: 1px solid #f4696b;
+    }
+    QPushButton:hover {
+        background-color: #f4696b;  /* cor de fundo*/
+        border: 1px solid #f4696b;
+    }
+    """
 
 class MiscStyles:
     """Outros estilos (splitter, preview, text edits, etc.)"""
+    icons_path = resource_path("resources/icons_svg/")
+
     btn_max_min = """
     QPushButton {
         font-size: 18px;
@@ -136,115 +134,114 @@ class MiscStyles:
         border-radius: 4px;
     }
     """
-    spin_box = """
-QSpinBox, 
-QDoubleSpinBox,
-QDateTimeEdit
-{
-	background-color: #000000;
-	color: white;
-	font-weight: bold;
-	border: 1px solid #FFFFFF;
-	padding : 4px;
+    spin_box = f"""
+    QSpinBox, 
+    QDoubleSpinBox,
+    QDateTimeEdit
+    {{
+        background-color: #000000;
+        color: white;
+        font-weight: bold;
+        border: 1px solid #FFFFFF;
+        padding : 4px;
 
-}
-
-
-QSpinBox::disabled, 
-QDoubleSpinBox::disabled,
-QDateTimeEdit::disabled
-{
-	background-color: #404040;
-	color: #656565;
-	border-color: #051a39;
-
-}
+    }}
 
 
-QSpinBox:hover, 
-QDoubleSpinBox::hover,
-QDateTimeEdit::hover
-{
-    border: 1px solid #3399FF;
+    QSpinBox::disabled, 
+    QDoubleSpinBox::disabled,
+    QDateTimeEdit::disabled
+    {{
+        background-color: #404040;
+        color: #656565;
+        border-color: #051a39;
 
-}
-
-
-QSpinBox::up-button, QSpinBox::down-button,
-QDoubleSpinBox::up-button, QDoubleSpinBox::down-button,
-QDateTimeEdit::up-button, QDateTimeEdit::down-button
-{
-	background-color: qlineargradient(spread:repeat, x1:1, y1:0, x2:1, y2:1, stop:0 rgba(135, 135, 135, 255),stop:1 rgba(170, 170, 170, 255));
-    border: 0px solid #333333;
-    color: #FFFFFF;
-
-}
+    }}
 
 
-QSpinBox::disabled, 
-QDoubleSpinBox::disabled,
-QDateTimeEdit::disabled
-{
-	background-color: #404040;
-	color: #656565;
-	border-color: #051a39;
+    QSpinBox:hover, 
+    QDoubleSpinBox::hover,
+    QDateTimeEdit::hover
+    {{
+        border: 1px solid #3399FF;
 
-}
+    }}
 
 
-QSpinBox::up-button:hover, QSpinBox::down-button:hover,
-QDoubleSpinBox::up-button:hover, QDoubleSpinBox::down-button:hover,
-QDateTimeEdit::up-button:hover, QDateTimeEdit::down-button:hover
-{
-	background-color: #646464;
-    border: 1px solid #333333;
+    QSpinBox::up-button, QSpinBox::down-button,
+    QDoubleSpinBox::up-button, QDoubleSpinBox::down-button,
+    QDateTimeEdit::up-button, QDateTimeEdit::down-button
+    {{
+        background-color: qlineargradient(spread:repeat, x1:1, y1:0, x2:1, y2:1, stop:0 rgba(135, 135, 135, 255),stop:1 rgba(170, 170, 170, 255));
+        border: 0px solid #333333;
+        color: #FFFFFF;
+
+    }}
 
 
-}
+    QSpinBox::disabled, 
+    QDoubleSpinBox::disabled,
+    QDateTimeEdit::disabled
+    {{
+        background-color: #404040;
+        color: #656565;
+        border-color: #051a39;
+
+    }}
 
 
-QSpinBox::up-button:disabled, QSpinBox::down-button:disabled,
-QDoubleSpinBox::up-button:disabled, QDoubleSpinBox::down-button:disabled,
-QDateTimeEdit::up-button:disabled, QDateTimeEdit::down-button:disabled
-{
-	background-color: #404040;
-	color: #656565;
-	border-color: #051a39;
-
-}
+    QSpinBox::up-button:hover, QSpinBox::down-button:hover,
+    QDoubleSpinBox::up-button:hover, QDoubleSpinBox::down-button:hover,
+    QDateTimeEdit::up-button:hover, QDateTimeEdit::down-button:hover
+    {{
+        background-color: #646464;
+        border: 1px solid #333333;
 
 
-QSpinBox::up-button:pressed, QSpinBox::down-button:pressed,
-QDoubleSpinBox::up-button:pressed, QDoubleSpinBox::down-button::pressed,
-QDateTimeEdit::up-button:pressed, QDateTimeEdit::down-button::pressed
-{
-    background-color: #979796;
-    border: 1px solid #444444;
-
-}
+    }}
 
 
-QSpinBox::down-arrow,
-QDoubleSpinBox::down-arrow,
-QDateTimeEdit::down-arrow
-{
-    image: url(./resources/icons_svg/down-arrow.svg);
-    width: 7px;
+    QSpinBox::up-button:disabled, QSpinBox::down-button:disabled,
+    QDoubleSpinBox::up-button:disabled, QDoubleSpinBox::down-button:disabled,
+    QDateTimeEdit::up-button:disabled, QDateTimeEdit::down-button:disabled
+    {{
+        background-color: #404040;
+        color: #656565;
+        border-color: #051a39;
 
-}
+    }}
 
 
-QSpinBox::up-arrow,
-QDoubleSpinBox::up-arrow,
-QDateTimeEdit::up-arrow
-{
-    image: url(./resources/icons_svg/up-arrow.svg);
-    width: 7px;
-    color: #3F75A8;
-}
+    QSpinBox::up-button:pressed, QSpinBox::down-button:pressed,
+    QDoubleSpinBox::up-button:pressed, QDoubleSpinBox::down-button::pressed,
+    QDateTimeEdit::up-button:pressed, QDateTimeEdit::down-button::pressed
+    {{
+        background-color: #979796;
+        border: 1px solid #444444;
+
+    }}
+
+
+    QSpinBox::down-arrow,
+    QDoubleSpinBox::down-arrow,
+    QDateTimeEdit::down-arrow
+    {{
+        image: url({icons_path}/down-arrow.svg);
+        width: 7px;
+
+    }}
+
+
+    QSpinBox::up-arrow,
+    QDoubleSpinBox::up-arrow,
+    QDateTimeEdit::up-arrow
+    {{
+        image: url({icons_path}/up-arrow.svg);
+        width: 7px;
+        color: #3F75A8;
+    }}
 
     """
-
 
 __all__ = [
     "ButtonStyles",

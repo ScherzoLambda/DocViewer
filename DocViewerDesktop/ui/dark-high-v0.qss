@@ -194,27 +194,6 @@ QLineEdit::disabled, QSpinBox::disabled, QDoubleSpinBox::disabled, QDateTimeEdit
 	border-color: #444444;
 }
 
-/* Specifics for QComboBox
-QComboBox:on
-{
-    border: 1px solid #333333;
-}
-
-QComboBox QAbstractItemView
-{
-    background-color: #1C1C1C;
-    color: #FFFFFF;
-    border: 1px solid #666666;
-    selection-background-color: #3399FF;
-    selection-color: #000000;
-}
-
-QComboBox::drop-down
-{
-    border-left: 1px solid #3399FF;
-}
-*/
-
 
 /* Specifics for SpinBox Buttons */
 /*QSpinBox::up-button, QSpinBox::down-button,*/
@@ -393,8 +372,8 @@ QScrollBar:horizontal, QScrollBar:vertical
     border-radius: 3px;
     width: 20px;
 }
-//QScrollBar:horizontal { height: 14px; margin: 0px 18px; }
-//QScrollBar:vertical { width: 20px; margin: 0px 0px 0px 0px; }
+/* //QScrollBar:horizontal { height: 14px; margin: 0px 18px; }
+//QScrollBar:vertical { width: 20px; margin: 0px 0px 0px 0px; } */
 
 QScrollBar::handle:horizontal, QScrollBar::handle:vertical
 {
@@ -431,7 +410,7 @@ QProgressBar::chunk
 }
 
 
-QWebEngineView, QTextBrowser {
+/* QWebEngineView, QTextBrowser {
     background-color: #2B2B2B;
     border-radius: 4px;
     border: 1px solid #555555;
@@ -441,80 +420,4 @@ QWebEngineView, QTextBrowser {
 
 QWebEngineView:focus {
     border: 1px solid #4F9EE3;
-}
-/*
-QSpinBox {
-    /* Fundo Escuro Principal */
-    background-color: #2b2b2b; /* Um cinza bem escuro (quase preto) */
-    color: #f0f0f0;             /* Texto branco ou muito claro para alto contraste */
-    border: 1px solid #555555;  /* Borda sutil para separar do fundo */
-    padding-left: 5px;          /* Espaço para o texto não ficar colado na borda */
-    min-height: 30px;           /* Altura mínima para um bom toque/clique */
-}
-
-QSpinBox:hover {
-    border: 1px solid #FFFFFF; /* Aumenta a clareza da borda */
-    background-color: #353535; /* Fundo ligeiramente mais claro */
-}
-
-/* Foco (quando o widget está selecionado) - O Destaque de Alto Contraste */
-QSpinBox:focus{
-    border: 2px solid #00aaff;  /* Uma borda azul brilhante (ou outra cor de destaque, como verde lima #00ff00) */
-    padding-left: 4px;          /* Ajuste o padding devido ao aumento da espessura da borda */
-}
-
-
-QSpinBox::up-button, QSpinBox::down-button {
-    subcontrol-origin: border;
-    width: 16px;                     /* Largura dos botões */
-    border: 1px solid #444444;       /* Borda para os botões */
-    background-color: #3c3c3c;       /* Fundo um pouco mais claro que o principal */
-}
-
-/* Botão de Aumentar (Up) */
-QSpinBox::up-button {
-    subcontrol-position: top right;
-    border-top-right-radius: 3px;    /* Arredondamento superior direito */
-}
-
-/* Botão de Diminuir (Down) */
-QSpinBox::down-button {
-    subcontrol-position: bottom right;
-    border-bottom-right-radius: 3px; /* Arredondamento inferior direito */
-}
-
-/* Estado de Hover (Mouse sobre os botões) - Onde o Contraste Aumenta */
-QSpinBox::up-button:hover, QSpinBox::down-button:hover {
-    background-color: #555555; /* Fundo mais claro/visível no hover */
-    border: 1px solid #00aaff; /* Borda de destaque no hover */
-}
-
-/* Estado de Pressionado (Mouse clicado nos botões) - Confirmação do Clique */
-QSpinBox::up-button:pressed, QSpinBox::down-button:pressed {
-    background-color: #00aaff; /* Fundo com a cor de destaque */
-}
-
-/*
- * Estilização das Setas (Indicators) dentro dos Botões
- */
-
-QSpinBox::up-arrow {
-    image: url(:/icons/arrow_up_white.png); /* Use um ícone de seta branco */
-    width: 8px;
-    height: 8px;
-}
-
-QSpinBox::down-arrow {
-    image: url(:/icons/arrow_down_white.png); /* Use um ícone de seta branco */
-    width: 8px;
-    height: 8px;
-}
-
-/* Estado Desabilitado (Disabled) */
-QSpinBox:disabled {
-    background-color: #1e1e1e; /* Fundo ainda mais escuro para indicar inatividade */
-    color: #6a6a6a;            /* Texto cinza claro para indicar que está desabilitado */
-    border: 1px dashed #444444;/* Borda tracejada/sutil para indicar desabilitação */
-}
-
-*/
+} */
