@@ -1,4 +1,4 @@
-# DocViewer_Palace
+# DocViewer
 A functional and smart application for write documentations.
 
 <img src="https://github.com/user-attachments/assets/8efd811a-ada7-428b-95b5-22bed9ea7424" width="500">

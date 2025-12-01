@@ -1,64 +1,160 @@
-name: Build and Release (Linux)
+name: Build and Release (Desktop)
 
 on:
-  # Dispare em push na branch main e tags
   push:
-    branches: 
-      - linux-releaseer
+    branches:
+      - linux-release
     tags: [ "*" ]
     paths:
       - 'DocViewerDesktop/**'
   workflow_dispatch:
 
 jobs:
-  build-linux:
-    runs-on: ubuntu-latest
+  build:
+    name: Build (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+
     steps:
-      # 1) Checkout do repositório
+      # 1) Checkout
       - name: Check out repository
         uses: actions/checkout@v4
 
-      # 2) Configurar Python
+      # 2) Setup Python
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: "3.9"  
+          python-version: "3.9"
 
       # 3) Instalar dependências
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install -r MarkViewDesktop/requirements.txt
+          pip install -r DocViewerDesktop/requirements.txt
           pip install pyinstaller
 
-      # 4) Build com PyInstaller
+      # 4) Build com PyInstaller (configuração por OS)
       - name: Build with PyInstaller
         run: |
-           pyinstaller --onefile MarkViewDesktop/main.py \
-            --name markview  
-           ls dist  
-      - name: Get upload URL
-        id: geturl
-        run:   |
-          upload_url=$(curl -sL https://api.github.com/repos/${{github.repository}}/releases/latest?access_token=${{ secrets.GITHUB_TOKEN }} | jq -r '.upload_url')
-          echo ::set-output name=upload_url::$upload_url
-      # 5) Criar ou atualizar uma Release no GitHub
-      - name: Create GitHub Release
+          if [[ "${{ matrix.os }}" == "ubuntu-latest" ]]; then
+            pyinstaller --noconsole --name DocViewer \
+              --icon="resources/icons_svg/favicon.ico" \
+              --add-data "DocViewerDesktop/ui/dark-high-v0.qss:ui" \
+              --add-data "DocViewerDesktop/resources/icons_svg/*:resources/icons_svg" \
+              --hidden-import="ui.ui_utils" \
+              --hidden-import="editor.editor_core" \
+              --hidden-import="editor.actions.file_actions" \
+              --hidden-import="editor.actions.edit_actions" \
+              --exclude-module PySide6.Qt3DCore \
+              --exclude-module PySide6.Qt3DRender \
+              --exclude-module PySide6.Qt3DExtras \
+              --exclude-module PySide6.QtDataVisualization \
+              --exclude-module PySide6.QtCharts \
+              --exclude-module PySide6.QtWebEngineWidgets \
+              --strip \
+              DocViewerDesktop/main.py
+          else
+            pyinstaller --noconsole --name DocViewer --onefile `
+              --icon="DocViewerDesktop/resources/icons_svg/favicon.ico" `
+              --add-data "DocViewerDesktop/ui/dark-high-v0.qss;ui" `
+              --add-data "DocViewerDesktop/resources/icons_svg/*;resources/icons_svg" `
+              --hidden-import="ui.ui_utils" `
+              --hidden-import="editor.editor_core" `
+              --hidden-import="editor.actions.file_actions" `
+              --hidden-import="editor.actions.edit_actions" `
+              --exclude-module PySide6.Qt3DCore `
+              --exclude-module PySide6.Qt3DRender `
+              --exclude-module PySide6.Qt3DExtras `
+              --exclude-module PySide6.QtDataVisualization `
+              --exclude-module PySide6.QtCharts `
+              --exclude-module PySide6.QtWebEngineWidgets `
+              DocViewerDesktop/main.py
+          fi
+        shell: bash
+
+      # 5) Processamento específico para Linux
+      - name: Linux – Build .deb with FPM
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ruby ruby-dev build-essential
+          sudo gem install --no-document fpm
+
+          mkdir -p package/usr/local/bin
+          mkdir -p package/usr/share/applications
+          mkdir -p package/usr/share/icons/hicolor/256x256/apps
+
+          cp dist/DocViewer package/usr/local/bin/docviewer
+          cp resources/icons_svg/favicon.png package/usr/share/icons/hicolor/256x256/apps/docviewer.png
+
+          cat <<EOF > package/usr/share/applications/docviewer.desktop
+          [Desktop Entry]
+          Type=Application
+          Name=DocViewer
+          Comment=Visualizador de documentos
+          Exec=/usr/local/bin/docviewer
+          Icon=docviewer
+          Terminal=false
+          Categories=Utility;Office;
+          StartupNotify=true
+          EOF
+
+          fpm -s dir -t deb \
+            -n docviewer \
+            -v 1.1.0 \
+            --architecture amd64 \
+            --description "DocViewer Desktop App" \
+            --license "GNU General Public License v3.0" \
+            --maintainer "Ernesto Alves <ernesto487dev@gmail.com>" \
+            --url "https://github.com/${{ github.repository }}" \
+            package/
+
+          mv docviewer_1.1.0_amd64.deb dist/
+
+      # 6) Processamento específico para Windows
+      - name: Windows – Zip artifacts
+        if: matrix.os == 'windows-latest'
+        run: |
+          Compress-Archive -Path dist\DocViewer\* -DestinationPath dist\docviewer-windows.zip
+        shell: pwsh
+
+      # 7) Criar Release (somente Linux)
+      - name: Create Release (Linux only)
+        if: matrix.os == 'ubuntu-latest'
         id: create_release
         uses: actions/create-release@v1
         with:
-          tag_name: v0.1.1   # Defina ou gere a versão dinamicamente (ex. via semver)
-          release_name: "Linux Release v0.1.0"
-          draft: false       # true se quiser criar como rascunho
-          prerelease: false  # true se for um pré-lançamento
+          tag_name: v1.1.0
+          release_name: "DocViewer Release v1.1.0"
+          draft: false
+          prerelease: true
         env:
-          GITHUB_TOKEN: ${{ secrets.BUILD_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      # 6) Fazer upload do binário gerado na release
-      - name: Upload to Release
+      # 8) Upload dos artefatos (Linux)
+      - name: Upload Linux .deb
+        if: matrix.os == 'ubuntu-latest'
         uses: actions/upload-release-asset@v1
         with:
-          upload_url: ${{ steps.geturl.outputs.upload_url }}
-          asset_path: dist/markview  # Caminho do arquivo gerado pelo PyInstaller (sem extensão no Linux)
-          asset_name: "markview-linux"  # Nome que aparecerá na Release
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: dist/docviewer_1.1.0_amd64.deb
+          asset_name: "docviewer-linux.deb"
+          asset_content_type: application/vnd.debian.binary-package
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # 9) Upload do Windows ZIP (usa a release criada pelo Linux)
+      - name: Upload Windows ZIP
+        if: matrix.os == 'windows-latest'
+        uses: actions/upload-release-asset@v1
+        with:
+          # Usa a mesma release criada pelo job Linux
+          upload_url: ${{ needs.build.outputs.upload_url }}
+          asset_path: dist/docviewer-windows.zip
+          asset_name: "docviewer-windows.zip"
           asset_content_type: application/octet-stream
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
