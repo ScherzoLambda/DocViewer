@@ -68,7 +68,7 @@ def loadSvgIcon(file_path, width=80, height=80):
     return pixmap
 
 def resource_path(relative_path: str) -> str:
-    """Obtém o caminho absoluto do recurso"""
+    """Obtém o caminho absoluto do recurso."""
     if hasattr(sys, "_MEIPASS"):
         # quando rodando no executável do PyInstaller
         return os.path.join(sys._MEIPASS, relative_path)
