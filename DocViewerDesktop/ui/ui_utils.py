@@ -59,6 +59,7 @@ def loadSvgIconColored(file_path, width=80, height=80, color=None):
     return pixmap
 
 def loadSvgIcon(file_path, width=80, height=80):
+    """Transforma um arquivo SVG em QPixmap."""
     svg_renderer = QSvgRenderer(file_path)
     pixmap = QPixmap(width, height)
     pixmap.fill(Qt.transparent)

@@ -41,7 +41,7 @@
           run: |
             if [[ "${{ matrix.os }}" == "ubuntu-latest" ]]; then
               pyinstaller --noconsole --name DocViewer --onefile \
-                --icon="resources/icons_svg/doc_icon.ico" \
+                --icon="DocViewerDesktop/resources/icons_svg/doc_icon.ico" \
                 --add-data "DocViewerDesktop/ui/dark-high-v0.qss:ui" \
                 --add-data "DocViewerDesktop/resources/icons_svg/*:resources/icons_svg" \
                 --hidden-import="ui.ui_utils" \
@@ -57,7 +57,7 @@
                 DocViewerDesktop/main.py
             else
               pyinstaller --noconsole --name DocViewer --onefile `
-                --icon="resources/icons_svg/doc_icon.ico" `
+                --icon="DocViewerDesktop/resources/icons_svg/doc_icon.ico" `
                 --add-data "DocViewerDesktop/ui/dark-high-v0.qss;ui" `
                 --add-data "DocViewerDesktop/resources/icons_svg/*;resources/icons_svg" `
                 --hidden-import="ui.ui_utils" `
@@ -87,7 +87,7 @@
             mkdir -p package/usr/share/icons/hicolor/256x256/apps
 
             cp dist/DocViewer package/usr/local/bin/docviewer
-            cp resources/icons_svg/doc_icon.png package/usr/share/icons/hicolor/256x256/apps/docviewer.png
+            cp DocViewerDesktop/resources/icons_svg/doc_icon.png package/usr/share/icons/hicolor/256x256/apps/docviewer.png
 
             cat <<EOF > package/usr/share/applications/docviewer.desktop
             [Desktop Entry]
