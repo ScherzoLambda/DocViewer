@@ -144,7 +144,6 @@ class FileActionsMixin:
         else:
             return
 
-
     def saveFile(self):
         """Salva as mudanças no arquivo atual"""
         # Obtém a aba atual e o caminho do arquivo associado a ela
@@ -271,7 +270,6 @@ class FileActionsMixin:
         self.ui.open_files[new_tab] = [file_.name, False, False]
         # self.checkIfAnyItemHidden()
 
-
     def open_initial_File(self, file_path_str=None):
         """
         Abre um arquivo.
@@ -305,29 +303,6 @@ class FileActionsMixin:
                 print(f"Erro ao abrir o arquivo {file_path}: {e}")
                 # Opcional: self.show_error_message("Erro de Leitura", f"Não foi possível ler o arquivo: {e}")
 
-    # def handle_file_change(self):
-    #     """
-    #     Slot chamado quando o arquivo monitorado é modificado no disco. Após o timer de debounce.
-    #     """
-    #     # reply_box = QMessageBox(self)
-    #     # reply_box.setWindowTitle('Arquivo Modificado')
-    #     # reply_box.setText(
-    #     #     'O arquivo foi modificado no disco por um programa externo. Deseja recarregá-lo (perdendo as alterações não salvas)?')
-    #     # reply_box.setStandardButtons(QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No)
-    #     # reply_box.setDefaultButton(QMessageBox.StandardButton.Yes)
-    #     # reply_box.setIcon(QMessageBox.Icon.Question)
-    #     # reply_box.setMinimumSize(600, 600)
-    #     # reply_box.setSizeGripEnabled(True)
-    #     # reply = reply_box.exec()
-    #     message = 'O arquivo foi modificado no disco por um programa externo. Deseja recarregá-lo (perdendo as alterações não salvas)?'
-    #     reply_box = CustomConfirmDialog(message, self)
-    #     reply = reply_box.exec()
-    #
-    #     if reply == QMessageBox.StandardButton.Yes:
-    #         self.load_file_content()
-    #     else:
-    #         # Se o usuário disser 'Não', você pode apenas alertá-lo e manter o estado atual
-    #         pass
 
     def load_file_content(self):
         """

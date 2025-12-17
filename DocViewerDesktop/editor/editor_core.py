@@ -178,38 +178,6 @@ class MarkdownEditor(MainWindow, EditActionsMixin, FileActionsMixin):
             self.ui.splitter.setOrientation(QtCore.Qt.Horizontal)
             # self.splitter.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
 
-    # def init_tray_icon(self):
-    #     """Inicializa o ícone da bandeja do sistema."""
-    #
-    #     # 1. Cria a instância do QSystemTrayIcon
-    #     # Você deve fornecer um ícone real para a sua aplicação aqui.
-    #     # Exemplo: QIcon('caminho/para/seu/icone.png')
-    #     app_icon = QIcon('/home/ernesto-dev/Documentos/labs/python_lab/DocViewer/DocViewerDesktop/resources/icons_svg/doc_icon.ico')
-    #     self.tray_icon = QSystemTrayIcon(app_icon, self)
-    #
-    #     self.tray_icon.messageClicked.connect(self.load_file_content)
-    #
-    #     # 3. Torna o ícone visível para habilitar as notificações
-    #     self.tray_icon.show()
-
-    # def handle_file_change(self):
-    #     """
-    #     Lança uma notificação nativa do SO em vez de um diálogo modal.
-    #     """
-    #     self.load_file_content()
-    #     # if not hasattr(self, 'tray_icon'):
-    #     # Você pode usar um ícone embutido do Qt ou um arquivo PNG/ICO
-    #
-    #     title = 'Arquivo Modificado'
-    #     message = 'O arquivo foi modificado no disco por um programa externo. Clique aqui para recarregar (perdendo as alterações não salvas).'
-    #     # 3. Lançar a notificação
-    #     self.tray_icon.showMessage(
-    #         title,
-    #         message,
-    #         QSystemTrayIcon.Information,  # Ou QSystemTrayIcon.Warning, QSystemTrayIcon.Critical
-    #         5000  # Tempo de exibição em ms (5 segundos)
-    #     )
-
 
     # def scroll_to_bottom(self, ok):
     #     """
