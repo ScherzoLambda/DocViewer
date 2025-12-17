@@ -5,6 +5,7 @@ from PySide6.QtGui import QPixmap, QPainter, QColor
 from PySide6.QtSvg import QSvgRenderer
 
 def loadSvgIconColored(file_path, width=80, height=80, color=None):
+    """Transforma um arquivo SVG em QPixmap, aplicando uma cor se fornecida."""
     svg_renderer = QSvgRenderer(file_path)
     if not svg_renderer.isValid():
         raise ValueError(f"Arquivo SVG inválido: {file_path}")
