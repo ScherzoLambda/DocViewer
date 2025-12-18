@@ -178,7 +178,7 @@ jobs:
         uses: actions/upload-release-asset@v1
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: linux-deb/docviewer_${{ env.VERSION }}_amd64.deb
+          asset_path: linux-deb/*.deb
           asset_name: docviewer-linux-amd64.deb
           asset_content_type: application/vnd.debian.binary-package
         env:
@@ -188,7 +188,7 @@ jobs:
         uses: actions/upload-release-asset@v1
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: windows-zip/docviewer-windows-${{ env.VERSION }}.zip
+          asset_path: windows-zip/*.zip
           asset_name: docviewer-windows.zip
           asset_content_type: application/octet-stream
         env:

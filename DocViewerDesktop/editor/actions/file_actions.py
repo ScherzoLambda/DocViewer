@@ -69,10 +69,8 @@ class FileActionsMixin:
             new_file_path = os.path.join(current_dir, new_name.strip())
 
             try:
-                # Renomeia o arquivo no sistema de arquivos
                 os.rename(file_path, new_file_path)
 
-                # Atualiza o nome da aba
                 self.ui.tab_widget.setTabText(tab_index, new_name.strip())
 
                 # Atualiza o nome no dicionário de arquivos abertos
