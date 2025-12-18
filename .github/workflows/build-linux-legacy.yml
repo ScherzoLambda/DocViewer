@@ -105,7 +105,7 @@
               -n docviewer \
               -v 1.1.0 \
               --architecture amd64 \
-              --description "DocViewer Desktop App" \
+              --description "DocViewer Desktop Editor de Documentos" \
               --license "GNU General Public License v3.0" \
               --maintainer "Ernesto Alves <ernesto487dev@gmail.com>" \
               --url "https://github.com/${{ github.repository }}" \
@@ -117,7 +117,7 @@
         - name: Windows – Zip artifacts
           if: matrix.os == 'windows-latest'
           run: |
-            Compress-Archive -Path dist\DocViewer\* -DestinationPath dist\docviewer-windows.zip
+            Compress-Archive -Path dist\DocViewer.exe -DestinationPath dist\docviewer-windows.zip
           shell: pwsh
 
         # 7) Criar Release (somente Linux)
