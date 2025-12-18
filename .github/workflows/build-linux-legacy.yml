@@ -10,73 +10,36 @@
     workflow_dispatch:
 
   jobs:
-    build:
-      name: Build (${{ matrix.os }})
-      runs-on: ${{ matrix.os }}
-      strategy:
-        fail-fast: false
-        matrix:
-          os: [ubuntu-latest, windows-latest]
+    build-linux:
+      name: Build Linux
+      runs-on: ubuntu-latest
 
       steps:
-        # 1) Checkout
-        - name: Check out repository
-          uses: actions/checkout@v4
+        - uses: actions/checkout@v4
 
-        # 2) Setup Python
-        - name: Set up Python
-          uses: actions/setup-python@v4
+        - uses: actions/setup-python@v4
           with:
             python-version: "3.9"
 
-        # 3) Instalar dependências
         - name: Install dependencies
           run: |
             python -m pip install --upgrade pip
             pip install -r DocViewerDesktop/requirements.txt
             pip install pyinstaller
 
-        # 4) Build com PyInstaller (configuração por OS)
-        - name: Build with PyInstaller
+        - name: Build with PyInstaller (Linux)
           run: |
-            if [[ "${{ matrix.os }}" == "ubuntu-latest" ]]; then
-              pyinstaller --noconsole --name DocViewer --onefile \
-                --icon="DocViewerDesktop/resources/icons_svg/doc_icon.ico" \
-                --add-data "DocViewerDesktop/ui/dark-high-v0.qss:ui" \
-                --add-data "DocViewerDesktop/resources/icons_svg/*:resources/icons_svg" \
-                --hidden-import="ui.ui_utils" \
-                --hidden-import="editor.editor_core" \
-                --hidden-import="editor.actions.file_actions" \
-                --hidden-import="editor.actions.edit_actions" \
-                --exclude-module PySide6.Qt3DCore \
-                --exclude-module PySide6.Qt3DRender \
-                --exclude-module PySide6.Qt3DExtras \
-                --exclude-module PySide6.QtDataVisualization \
-                --exclude-module PySide6.QtCharts \
-                --exclude-module PySide6.QtWebEngineWidgets \
-                DocViewerDesktop/main.py
-            else
-              pyinstaller --noconsole --name DocViewer --onefile \
-                --icon="DocViewerDesktop/resources/icons_svg/doc_icon.ico" \
-                --add-data "DocViewerDesktop/ui/dark-high-v0.qss;ui" \
-                --add-data "DocViewerDesktop/resources/icons_svg/*;resources/icons_svg" \
-                --hidden-import="ui.ui_utils" \
-                --hidden-import="editor.editor_core" \
-                --hidden-import="editor.actions.file_actions" \
-                --hidden-import="editor.actions.edit_actions" \
-                --exclude-module PySide6.Qt3DCore \
-                --exclude-module PySide6.Qt3DRender \
-                --exclude-module PySide6.Qt3DExtras \
-                --exclude-module PySide6.QtDataVisualization \
-                --exclude-module PySide6.QtCharts \
-                --exclude-module PySide6.QtWebEngineWidgets \
-                DocViewerDesktop/main.py
-            fi
-          shell: bash
+            pyinstaller --noconsole --name DocViewer --onefile \
+              --icon="DocViewerDesktop/resources/icons_svg/doc_icon.ico" \
+              --add-data "DocViewerDesktop/ui/dark-high-v0.qss:ui" \
+              --add-data "DocViewerDesktop/resources/icons_svg/*:resources/icons_svg" \
+              --hidden-import="ui.ui_utils" \
+              --hidden-import="editor.editor_core" \
+              --hidden-import="editor.actions.file_actions" \
+              --hidden-import="editor.actions.edit_actions" \
+              DocViewerDesktop/main.py
 
-        # 5) Processamento específico para Linux
-        - name: Linux – Build .deb with FPM
-          if: matrix.os == 'ubuntu-latest'
+        - name: Build .deb
           run: |
             sudo apt-get update
             sudo apt-get install -y ruby ruby-dev build-essential
@@ -87,73 +50,116 @@
             mkdir -p package/usr/share/icons/hicolor/256x256/apps
 
             cp dist/DocViewer package/usr/local/bin/docviewer
-            cp DocViewerDesktop/resources/icons_svg/doc_icon.png package/usr/share/icons/hicolor/256x256/apps/docviewer.png
+            chmod +x package/usr/local/bin/docviewer
+
+            cp DocViewerDesktop/resources/icons_svg/doc_icon.png \
+              package/usr/share/icons/hicolor/256x256/apps/docviewer.png
 
             cat <<EOF > package/usr/share/applications/docviewer.desktop
             [Desktop Entry]
             Type=Application
             Name=DocViewer
-            Comment=Visualizador de documentos
             Exec=/usr/local/bin/docviewer
             Icon=docviewer
             Terminal=false
             Categories=Utility;Office;
-            StartupNotify=true
             EOF
 
             fpm -s dir -t deb \
               -n docviewer \
               -v 1.1.0 \
               --architecture amd64 \
-              --description "DocViewer Desktop Editor de Documentos" \
-              --license "GNU General Public License v3.0" \
-              --maintainer "Ernesto Alves <ernesto487dev@gmail.com>" \
-              --url "https://github.com/${{ github.repository }}" \
               package/
 
-            mv docviewer_1.1.0_amd64.deb dist/
+            mkdir -p artifacts
+            mv docviewer_1.1.0_amd64.deb artifacts/
 
-        # 6) Processamento específico para Windows
-        - name: Windows – Zip artifacts
-          if: matrix.os == 'windows-latest'
+        - name: Upload Linux artifact
+          uses: actions/upload-artifact@v4
+          with:
+            name: linux-deb
+            path: artifacts/*.deb
+
+    build-windows:
+      name: Build Windows
+      runs-on: windows-latest
+
+      steps:
+        - uses: actions/checkout@v4
+
+        - uses: actions/setup-python@v4
+          with:
+            python-version: "3.9"
+
+        - name: Install dependencies
           run: |
-            Compress-Archive -Path dist\DocViewer.exe -DestinationPath dist\docviewer-windows.zip
-          shell: pwsh
+            python -m pip install --upgrade pip
+            pip install -r DocViewerDesktop/requirements.txt
+            pip install pyinstaller
 
-        # 7) Criar Release (somente Linux)
-        - name: Create Release (Linux only)
-          if: matrix.os == 'ubuntu-latest'
+        - name: Build with PyInstaller (Windows)
+          shell: bash
+          run: |
+            pyinstaller --noconsole --name DocViewer --onefile \
+              --icon="DocViewerDesktop/resources/icons_svg/doc_icon.ico" \
+              --add-data "DocViewerDesktop/ui/dark-high-v0.qss;ui" \
+              --add-data "DocViewerDesktop/resources/icons_svg/*;resources/icons_svg" \
+              --hidden-import="ui.ui_utils" \
+              --hidden-import="editor.editor_core" \
+              --hidden-import="editor.actions.file_actions" \
+              --hidden-import="editor.actions.edit_actions" \
+              DocViewerDesktop/main.py
+
+        - name: Zip Windows binary
+          shell: pwsh
+          run: |
+            mkdir artifacts
+            Compress-Archive -Path dist\DocViewer.exe -DestinationPath artifacts\docviewer-windows.zip
+
+        - name: Upload Windows artifact
+          uses: actions/upload-artifact@v4
+          with:
+            name: windows-zip
+            path: artifacts/docviewer-windows.zip
+
+    release:
+      name: Create GitHub Release
+      runs-on: ubuntu-latest
+      needs: [build-linux, build-windows]
+
+      steps:
+        - name: Download artifacts
+          uses: actions/download-artifact@v4
+
+        - name: Create Release
           id: create_release
           uses: actions/create-release@v1
           with:
             tag_name: v1.1.0
-            release_name: "DocViewer Release v1.1.0"
+            release_name: "DocViewer v1.1.0"
             draft: false
             prerelease: true
           env:
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-        # 8) Upload dos artefatos (Linux)
         - name: Upload Linux .deb
-          if: matrix.os == 'ubuntu-latest'
           uses: actions/upload-release-asset@v1
           with:
             upload_url: ${{ steps.create_release.outputs.upload_url }}
-            asset_path: dist/docviewer_1.1.0_amd64.deb
-            asset_name: "docviewer-linux.deb"
+            asset_path: linux-deb/docviewer_1.1.0_amd64.deb
+            asset_name: docviewer-linux.deb
             asset_content_type: application/vnd.debian.binary-package
           env:
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-        # 9) Upload do Windows ZIP (usa a release criada pelo Linux)
         - name: Upload Windows ZIP
-          if: matrix.os == 'windows-latest'
           uses: actions/upload-release-asset@v1
           with:
-            # Usa a mesma release criada pelo job Linux
             upload_url: ${{ steps.create_release.outputs.upload_url }}
-            asset_path: dist/docviewer-windows.zip
-            asset_name: "docviewer-windows.zip"
+            asset_path: windows-zip/docviewer-windows.zip
+            asset_name: docviewer-windows.zip
             asset_content_type: application/octet-stream
           env:
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+

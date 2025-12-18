@@ -306,7 +306,7 @@ class FileActionsMixin:
 
     def load_file_content(self):
         """
-        Recarrega o conteúdo do arquivo monitorado no editor.
+        Recarrega o conteúdo do arquivo monitorado no editor. chamado quando o arquivo é modificado externamente.
         """
         current_index = self.ui.tab_widget.currentIndex()
         current_tab = self.ui.tab_widget.widget(current_index)
