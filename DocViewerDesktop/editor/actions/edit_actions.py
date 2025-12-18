@@ -300,14 +300,12 @@ class EditActionsMixin:
         """
     
     def verifyChangesAndSetTabName(self):
-        # print("Verificando mudanças no arquivo...")
         current_index = self.ui.tab_widget.currentIndex()
         current_tab = self.ui.tab_widget.widget(current_index)
         if current_tab in self.ui.open_files:
             file_path = self.ui.open_files[current_tab][0]
             isModified = self.ui.open_files[current_tab][1]
             if not file_path.endswith('*') and not isModified:
-                # print("Arquivo modificado, atualizando nome da aba...")
                 file_name = file_path.split('/')[-1]  
                 self.ui.tab_widget.setTabText(current_index, f"{file_name}*")
                 self.ui.open_files[current_tab][1] = True

@@ -151,7 +151,7 @@
           uses: actions/upload-release-asset@v1
           with:
             # Usa a mesma release criada pelo job Linux
-            upload_url: ${{ needs.build.outputs.upload_url }}
+            upload_url: ${{ steps.create_release.outputs.upload_url }}
             asset_path: dist/docviewer-windows.zip
             asset_name: "docviewer-windows.zip"
             asset_content_type: application/octet-stream
