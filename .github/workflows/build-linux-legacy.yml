@@ -10,7 +10,7 @@ on:
   workflow_dispatch:
 
 env:
-  VERSION: ${{ github.ref_type == 'tag' && github.ref_name || format('dev-{0}', github.run_number) }}
+  VERSION: ${{ github.ref_type == 'tag' && github.ref_name || 1.1.0) }}
 
 jobs:
   build-linux:

@@ -278,16 +278,6 @@ class FileActionsMixin:
         """
 
         file_path = file_path_str
-        #
-        # # 1. Se o caminho do arquivo NÃO foi fornecido (ou é None), abre a caixa de diálogo.
-        # if not file_path:
-        #     options = QFileDialog.Options()
-        #     options |= QFileDialog.ReadOnly
-        #     filter = "Markdown Files (*.md);;All Files (*)"
-        #     # A caixa de diálogo retorna o caminho e um filtro (que ignoramos com o _)
-        #     file_path, _ = QFileDialog.getOpenFileName(self, "Abrir Arquivo", "", filter, options=options)
-        #
-        # 2. Se um caminho válido foi obtido (seja via parâmetro ou diálogo)
         if file_path and os.path.exists(file_path):
             try:
                 # Garante que o nome do arquivo seja extraído corretamente
