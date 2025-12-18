@@ -67,7 +67,6 @@ class FileActionsMixin:
                                             "Novo nome para o arquivo:",
                                             text=os.path.basename(current_name))
         if ok and new_name.strip():
-            # Gera o novo caminho completo do arquivo
             new_file_path = os.path.join(current_dir, new_name.strip())
 
             try:
