@@ -57,7 +57,7 @@ class FileActionsMixin:
 
     def renameTab(self, tab_index, tab_widget):
         """Renomeia a aba especificada e o arquivo associado"""
-        # Obtém o nome atual da aba e o caminho completo do arquivo
+
         current_name = self.ui.tab_widget.tabText(tab_index)
         file_path = self.ui.open_files[tab_widget][0]  # Caminho atual do arquivo
         current_dir = os.path.dirname(file_path)  # Diretório atual do arquivo

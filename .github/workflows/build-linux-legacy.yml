@@ -4,41 +4,33 @@ on:
   push:
     branches:
       - linux-release
-    tags:
-      - "*"
+    tags: [ "*" ]
     paths:
-      - "DocViewerDesktop/**"
+      - 'DocViewerDesktop/**'
   workflow_dispatch:
 
 env:
-  APP_NAME: docviewer
+  VERSION: ${{ github.ref_type == 'tag' && github.ref_name || format('{0}-dev', github.run_number) }}
 
 jobs:
   build-linux:
-    name: Build Linux (.deb)
+    name: Build Linux
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
 
-      - uses: actions/setup-python@v4
+      - name: Setup Python
+        uses: actions/setup-python@v4
         with:
           python-version: "3.9"
-
-      - name: Set version
-        run: |
-          if [[ "${GITHUB_REF_TYPE}" == "tag" ]]; then
-            echo "VERSION=${GITHUB_REF_NAME#v}" >> $GITHUB_ENV
-          else
-            echo "VERSION=0.0.${GITHUB_RUN_NUMBER}" >> $GITHUB_ENV
-          fi
 
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -r DocViewerDesktop/requirements.txt
           pip install pyinstaller
-
       - name: Build with PyInstaller (Linux)
         run: |
           pyinstaller --noconsole --name DocViewer \
@@ -50,40 +42,29 @@ jobs:
             --hidden-import="editor.actions.file_actions" \
             --hidden-import="editor.actions.edit_actions" \
             DocViewerDesktop/main.py
-
+      
       - name: Build .deb package
         run: |
           sudo apt-get update
           sudo apt-get install -y ruby ruby-dev build-essential
           sudo gem install --no-document fpm
-
           mkdir -p package/opt/docviewer
-          mkdir -p package/usr/bin
           mkdir -p package/usr/share/applications
           mkdir -p package/usr/share/icons/hicolor/256x256/apps
-
           cp -r dist/DocViewer/* package/opt/docviewer/
           chmod +x package/opt/docviewer/DocViewer
-
-          cat <<'EOF' > package/usr/bin/docviewer
-          #!/bin/sh
-          exec /opt/docviewer/DocViewer "$@"
-          EOF
-          chmod +x package/usr/bin/docviewer
-
           cp DocViewerDesktop/resources/icons_svg/doc_icon.png \
             package/usr/share/icons/hicolor/256x256/apps/docviewer.png
-
           cat <<EOF > package/usr/share/applications/docviewer.desktop
           [Desktop Entry]
           Type=Application
           Name=DocViewer
-          Exec=docviewer
+          Exec=/opt/docviewer/DocViewer
           Icon=docviewer
           Terminal=false
           Categories=Utility;Office;
           EOF
-
+          
           fpm -s dir -t deb \
             -n docviewer \
             -v "$VERSION" \
@@ -96,7 +77,7 @@ jobs:
 
           mkdir -p artifacts
           mv docviewer_${VERSION}_amd64.deb artifacts/
-
+      
       - name: Upload Linux artifact
         uses: actions/upload-artifact@v4
         with:
@@ -104,31 +85,23 @@ jobs:
           path: artifacts/*.deb
 
   build-windows:
-    name: Build Windows (zip)
+    name: Build Windows
     runs-on: windows-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
 
-      - uses: actions/setup-python@v4
+      - name: Setup Python
+        uses: actions/setup-python@v4
         with:
           python-version: "3.9"
-
-      - name: Set version
-        shell: bash
-        run: |
-          if [[ "${GITHUB_REF_TYPE}" == "tag" ]]; then
-            echo "VERSION=${GITHUB_REF_NAME#v}" >> $GITHUB_ENV
-          else
-            echo "VERSION=0.0.${GITHUB_RUN_NUMBER}" >> $GITHUB_ENV
-          fi
 
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -r DocViewerDesktop/requirements.txt
           pip install pyinstaller
-
       - name: Build with PyInstaller (Windows)
         shell: bash
         run: |
@@ -141,19 +114,16 @@ jobs:
             --hidden-import="editor.actions.file_actions" \
             --hidden-import="editor.actions.edit_actions" \
             DocViewerDesktop/main.py
-
       - name: Zip Windows build
         shell: pwsh
         run: |
           mkdir artifacts
-          Compress-Archive -Path dist\DocViewer\* `
-            -DestinationPath artifacts\docviewer-windows-${env:VERSION}.zip
-
+          Compress-Archive -Path dist\DocViewer -DestinationPath artifacts\docviewer-windows.zip
       - name: Upload Windows artifact
         uses: actions/upload-artifact@v4
         with:
           name: windows-zip
-          path: artifacts/*.zip
+          path: artifacts/docviewer-windows.zip
 
   release:
     name: Create GitHub Release
@@ -161,14 +131,15 @@ jobs:
     needs: [build-linux, build-windows]
 
     steps:
-      - uses: actions/download-artifact@v4
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
 
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
         with:
-          tag_name: v${{ env.VERSION }}
-          release_name: "DocViewer v${{ env.VERSION }}"
+          tag_name: ${{ env.VERSION }}
+          release_name: "DocViewer ${{ env.VERSION }}"
           draft: false
           prerelease: true
         env:
@@ -178,8 +149,8 @@ jobs:
         uses: actions/upload-release-asset@v1
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: linux-deb/*.deb
-          asset_name: docviewer-linux-amd64.deb
+          asset_path: linux-deb/docviewer_${{ env.VERSION }}_amd64.deb
+          asset_name: docviewer-linux.deb
           asset_content_type: application/vnd.debian.binary-package
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -188,7 +159,7 @@ jobs:
         uses: actions/upload-release-asset@v1
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: windows-zip/*.zip
+          asset_path: windows-zip/docviewer-windows.zip
           asset_name: docviewer-windows.zip
           asset_content_type: application/octet-stream
         env:
