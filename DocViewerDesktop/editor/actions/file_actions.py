@@ -62,7 +62,6 @@ class FileActionsMixin:
         file_path = self.ui.open_files[tab_widget][0]  # Caminho atual do arquivo
         current_dir = os.path.dirname(file_path)  # Diretório atual do arquivo
 
-        # Solicita um novo nome para o arquivo
         new_name, ok = QInputDialog.getText(self, "Renomear arquivo",
                                             "Novo nome para o arquivo:",
                                             text=os.path.basename(current_name))
