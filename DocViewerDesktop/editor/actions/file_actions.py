@@ -274,7 +274,7 @@ class FileActionsMixin:
         """
         Abre um arquivo.
         Se 'file_path_str' for fornecido, abre o arquivo diretamente.
-        Caso contrário, abre uma caixa de diálogo para o usuário selecionar.
+        Caso contrário, abre uma caixa de diálogo para o usuário selecionar...
         """
 
         file_path = file_path_str
